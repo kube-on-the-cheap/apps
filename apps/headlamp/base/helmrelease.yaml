@@ -39,5 +39,4 @@ spec:
         installOptions:
           parallel: true
           maxConcurrent: 2
-
     replicaCount: 1

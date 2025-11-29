@@ -1,0 +1,28 @@
+# --- 1. Secret for OCI Credentials (Must be created first) ---
+# NOTE: Replace 'OCI_ACCESS_KEY' and 'OCI_SECRET_KEY' with your actual keys
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oci-backup-credentials
+  namespace: authentik
+type: Opaque
+stringData:
+  # OCI User Access Key (e.g., AKIA...)
+  aws_access_key_id: OCI_ACCESS_KEY
+  # OCI User Secret Key
+  aws_secret_access_key: OCI_SECRET_KEY
+---
+# --- 2. Backup Resource Definition ---
+# Defines a scheduled backup to the Oracle Cloud Object Storage (S3 API endpoint)
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: scheduled-daily-pgauthentik-backup
+  namespace: authentik
+spec:
+  schedule: "0 1 * * *"
+  backupOwnerReference: self
+  cluster:
+    name: authentik
+  method: barmanObjectStore
+  target: primary

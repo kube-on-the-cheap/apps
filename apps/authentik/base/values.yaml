@@ -1,0 +1,50 @@
+global:
+  env:
+    - name: AUTHENTIK_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: authentik-secret-key
+          key: secret-key
+
+server:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  autoscaling:
+    enabled: false
+
+worker:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+redis:
+  enabled: false
+
+postgresql:
+  enabled: false
+  host: authentik-rw.authentik.svc.cluster.local
+  name: authentikdb
+  user:
+    valueFrom:
+      secretKeyRef:
+        name: authentikdb-secrets
+        key: username
+  password:
+    valueFrom:
+      secretKeyRef:
+        name: authentikdb-secrets
+        key: password
+
+ingress:
+  enabled: false

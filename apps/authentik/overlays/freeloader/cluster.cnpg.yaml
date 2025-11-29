@@ -1,0 +1,52 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  instances: 2
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.2
+
+  storage:
+    emptyDir: {}
+
+  postgresql:
+    resources:
+      requests:
+        memory: 64M
+        cpu: 125m
+      limits:
+        memory: 128M
+        cpu: 512m
+
+    # Ensure the primary waits for the replica to acknowledge transaction commit
+    synchronousReplication:
+      enabled: true
+      quorum: 1 # Wait for at least 1 standby (the replica)
+
+  bootstrap:
+    initdb:
+      database: authentikdb
+      owner: authentik
+      secret:
+        name: authentikdb-secrets # The operator will create this secret with passwords
+
+  backup:
+    barmanObjectStore:
+      destinationPath: s3://cnpg-backups-oke/authentik
+      endpointURL: https://froaw0vigiem.compat.objectstorage.eu-frankfurt-1.oraclecloud.com
+      s3Credentials:
+        accessKeyId:
+          name: oci-backup-credentials
+          key: aws_access_key_id
+        secretAccessKey:
+          name: oci-backup-credentials
+          key: aws_secret_access_key
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+    retentionPolicy: "14d"
+
+  priorityClassName: system-cluster-critical
