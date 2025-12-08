@@ -9,21 +9,16 @@ spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:16.2
 
   storage:
-    emptyDir: {}
+    storageClass: local-path
+    size: 1Gi
 
-  postgresql:
-    resources:
-      requests:
-        memory: 64M
-        cpu: 125m
-      limits:
-        memory: 128M
-        cpu: 512m
-
-    # Ensure the primary waits for the replica to acknowledge transaction commit
-    synchronousReplication:
-      enabled: true
-      quorum: 1 # Wait for at least 1 standby (the replica)
+  resources:
+    requests:
+      memory: 64M
+      cpu: 125m
+    limits:
+      memory: 128M
+      cpu: 512m
 
   bootstrap:
     initdb:

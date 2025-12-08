@@ -24,5 +24,3 @@ spec:
   backupOwnerReference: self
   cluster:
     name: authentik
-  method: barmanObjectStore
-  target: primary
