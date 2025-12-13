@@ -5,6 +5,20 @@ global:
         secretKeyRef:
           name: authentik-secret-key
           key: secret-key
+    - name: AUTHENTIK_POSTGRESQL__HOST
+      value: authentik-rw.authentik.svc.cluster.local
+    - name: AUTHENTIK_POSTGRESQL__NAME
+      value: authentikdb
+    - name: AUTHENTIK_POSTGRESQL__USER
+      valueFrom:
+        secretKeyRef:
+          name: authentikdb-secrets
+          key: username
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: authentikdb-secrets
+          key: password
 
 server:
   ingress:
@@ -35,15 +49,3 @@ redis:
 
 postgresql:
   enabled: false
-  host: authentik-rw.authentik.svc.cluster.local
-  name: authentikdb
-  user:
-    valueFrom:
-      secretKeyRef:
-        name: authentikdb-secrets
-        key: username
-  password:
-    valueFrom:
-      secretKeyRef:
-        name: authentikdb-secrets
-        key: password
