@@ -10,7 +10,7 @@ spec:
 
   storage:
     storageClass: local-path
-    size: 1Gi
+    size: 5Gi
 
   resources:
     requests:
@@ -24,8 +24,12 @@ spec:
     initdb:
       database: authentikdb
       owner: authentik
-      secret:
-        name: authentikdb-secrets # The operator will create this secret with passwords
+
+  postgresql:
+    parameters:
+      max_worker_processes: "4"
+      max_parallel_workers: "2"
+      max_replication_slots: "8"
 
   backup:
     barmanObjectStore:
