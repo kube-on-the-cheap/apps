@@ -45,7 +45,15 @@ worker:
       memory: 512Mi
 
 redis:
-  enabled: false
+  enabled: true
+  master:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
 
 postgresql:
   enabled: false
