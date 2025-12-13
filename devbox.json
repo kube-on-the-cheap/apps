@@ -7,10 +7,10 @@
     "kubernetes-helm-wrapped@3.17.1",
     "lychee@0.18.1",
     "pre-commit@4.0.1",
-    "python312Packages.ruamel-yaml@latest",
     "k9s@0.50.6",
     "yq@latest",
-    "python312@latest"
+    "python313Packages.ruamel-yaml@latest",
+    "python313@latest"
   ],
   "shell": {
     "init_hook": [

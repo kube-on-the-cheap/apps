@@ -393,124 +393,124 @@
         }
       }
     },
-    "python312@latest": {
-      "last_modified": "2025-07-13T22:45:35Z",
+    "python313@latest": {
+      "last_modified": "2025-05-16T20:19:48Z",
       "plugin_version": "0.0.4",
-      "resolved": "github:NixOS/nixpkgs/a421ac6595024edcfbb1ef950a3712b89161c359#python312",
+      "resolved": "github:NixOS/nixpkgs/12a55407652e04dcf2309436eb06fef0d3713ef3#python313",
       "source": "devbox-search",
-      "version": "3.12.11",
+      "version": "3.13.3",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/a97d77dxagnddkn5484kfc2gyj3dcdnq-python3-3.12.11",
+              "path": "/nix/store/1a8xg8l3m67hxinxzzcsak9736qm9vsf-python3-3.13.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/a97d77dxagnddkn5484kfc2gyj3dcdnq-python3-3.12.11"
+          "store_path": "/nix/store/1a8xg8l3m67hxinxzzcsak9736qm9vsf-python3-3.13.3"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/0psncrl7sy6gsbzcwcxi19nhm987xk1w-python3-3.12.11",
+              "path": "/nix/store/yy0xvc2rydhrs0h1v8d7r3sql347xzz5-python3-3.13.3",
               "default": true
             },
             {
               "name": "debug",
-              "path": "/nix/store/kgkgkq90m387sam8bc4p7ab3a96wd59a-python3-3.12.11-debug"
+              "path": "/nix/store/42bxfqfrh8cwspl7szr0cw8739xv8qlq-python3-3.13.3-debug"
             }
           ],
-          "store_path": "/nix/store/0psncrl7sy6gsbzcwcxi19nhm987xk1w-python3-3.12.11"
+          "store_path": "/nix/store/yy0xvc2rydhrs0h1v8d7r3sql347xzz5-python3-3.13.3"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/r8zs6n1yjghm89n62zid68bflz3252c2-python3-3.12.11",
+              "path": "/nix/store/gbrigjhghz9v2p0zf9b2fnvs0g0yx7q4-python3-3.13.3",
               "default": true
             }
           ],
-          "store_path": "/nix/store/r8zs6n1yjghm89n62zid68bflz3252c2-python3-3.12.11"
+          "store_path": "/nix/store/gbrigjhghz9v2p0zf9b2fnvs0g0yx7q4-python3-3.13.3"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/gclk0nvp36gdc05v16ham4f86la5wnwi-python3-3.12.11",
+              "path": "/nix/store/2mab9iiwhcqwk75qwvp3zv0bvbiaq6cs-python3-3.13.3",
               "default": true
             },
             {
               "name": "debug",
-              "path": "/nix/store/vcfwifqcb82znj7bfg6vkljny8wsyc93-python3-3.12.11-debug"
+              "path": "/nix/store/9z6k8ijl2md0y2n95yprbjj4vxbfsi15-python3-3.13.3-debug"
             }
           ],
-          "store_path": "/nix/store/gclk0nvp36gdc05v16ham4f86la5wnwi-python3-3.12.11"
+          "store_path": "/nix/store/2mab9iiwhcqwk75qwvp3zv0bvbiaq6cs-python3-3.13.3"
         }
       }
     },
-    "python312Packages.ruamel-yaml@latest": {
-      "last_modified": "2025-07-13T22:45:35Z",
-      "resolved": "github:NixOS/nixpkgs/a421ac6595024edcfbb1ef950a3712b89161c359#python312Packages.ruamel-yaml",
+    "python313Packages.ruamel-yaml@latest": {
+      "last_modified": "2025-11-23T21:50:36Z",
+      "resolved": "github:NixOS/nixpkgs/ee09932cedcef15aaf476f9343d1dea2cb77e261#python313Packages.ruamel-yaml",
       "source": "devbox-search",
-      "version": "0.18.10",
+      "version": "0.18.14",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/i6wdpryfxfa1rbn59jpacis0kn61k6rm-python3.12-ruamel-yaml-0.18.10",
+              "path": "/nix/store/3kmq9mqwijjs4cjv6333dapyjl7bh37l-python3.13-ruamel-yaml-0.18.14",
               "default": true
             },
             {
               "name": "dist",
-              "path": "/nix/store/2alnignmx14h7gr7ns9b05zrfyd06j58-python3.12-ruamel-yaml-0.18.10-dist"
+              "path": "/nix/store/6850v4r91f79g0xb51sdrrl2zci11v3p-python3.13-ruamel-yaml-0.18.14-dist"
             }
           ],
-          "store_path": "/nix/store/i6wdpryfxfa1rbn59jpacis0kn61k6rm-python3.12-ruamel-yaml-0.18.10"
+          "store_path": "/nix/store/3kmq9mqwijjs4cjv6333dapyjl7bh37l-python3.13-ruamel-yaml-0.18.14"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/1gsa06ap2p1hm4ncsr8mxbwplq8fgq76-python3.12-ruamel-yaml-0.18.10",
+              "path": "/nix/store/56d1d9vq0qv5i1mmrmgmg721nbcnvxnl-python3.13-ruamel-yaml-0.18.14",
               "default": true
             },
             {
               "name": "dist",
-              "path": "/nix/store/gry5r7j5057i6qbg3h66b785ik7gq5ly-python3.12-ruamel-yaml-0.18.10-dist"
+              "path": "/nix/store/z5bkb89873gmgif7lswnp0bs4fc57sk4-python3.13-ruamel-yaml-0.18.14-dist"
             }
           ],
-          "store_path": "/nix/store/1gsa06ap2p1hm4ncsr8mxbwplq8fgq76-python3.12-ruamel-yaml-0.18.10"
+          "store_path": "/nix/store/56d1d9vq0qv5i1mmrmgmg721nbcnvxnl-python3.13-ruamel-yaml-0.18.14"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/06vl0rajm5gkdnvj048yrpf5c1c79p52-python3.12-ruamel-yaml-0.18.10",
+              "path": "/nix/store/q69035w8gxgwq0iv39w3ph4rl7c8xs0q-python3.13-ruamel-yaml-0.18.14",
               "default": true
             },
             {
               "name": "dist",
-              "path": "/nix/store/1qzncgxrimbc7f1076xhrr6lxhn09i0b-python3.12-ruamel-yaml-0.18.10-dist"
+              "path": "/nix/store/62phrv4a31c36iqjb1wn9ahgbjcpypr2-python3.13-ruamel-yaml-0.18.14-dist"
             }
           ],
-          "store_path": "/nix/store/06vl0rajm5gkdnvj048yrpf5c1c79p52-python3.12-ruamel-yaml-0.18.10"
+          "store_path": "/nix/store/q69035w8gxgwq0iv39w3ph4rl7c8xs0q-python3.13-ruamel-yaml-0.18.14"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/47cmigrn1jqxa5chxi036qnbgksvb376-python3.12-ruamel-yaml-0.18.10",
+              "path": "/nix/store/prpbn02py0x7xgb4fk1xmgzghix6wnxb-python3.13-ruamel-yaml-0.18.14",
               "default": true
             },
             {
               "name": "dist",
-              "path": "/nix/store/4wjrs3qzavqsk9sfjakj4007pw0rfna9-python3.12-ruamel-yaml-0.18.10-dist"
+              "path": "/nix/store/0sfa21wvnrr26wn2m90gwn4zzjjabqjh-python3.13-ruamel-yaml-0.18.14-dist"
             }
           ],
-          "store_path": "/nix/store/47cmigrn1jqxa5chxi036qnbgksvb376-python3.12-ruamel-yaml-0.18.10"
+          "store_path": "/nix/store/prpbn02py0x7xgb4fk1xmgzghix6wnxb-python3.13-ruamel-yaml-0.18.14"
         }
       }
     },
