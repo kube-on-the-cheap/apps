@@ -14,10 +14,10 @@ spec:
 
   resources:
     requests:
-      memory: 64M
+      memory: 256Mi
       cpu: 125m
     limits:
-      memory: 128M
+      memory: 512Mi
       cpu: 512m
 
   bootstrap:
