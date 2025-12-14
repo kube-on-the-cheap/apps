@@ -7,3 +7,4 @@ resources:
   - secret-key.externalsecret.yaml
   - s3-credentials-pgauthentik-sync.yaml
   - httproute.yaml
+  - tailscale-ingress.yaml
