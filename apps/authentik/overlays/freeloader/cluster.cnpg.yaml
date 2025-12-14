@@ -1,7 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: authentik
+  name: authentik-pg
   namespace: authentik
 spec:
   instances: 2
@@ -37,10 +37,10 @@ spec:
       endpointURL: https://froaw0vigiem.compat.objectstorage.eu-frankfurt-1.oraclecloud.com
       s3Credentials:
         accessKeyId:
-          name: oci-backup-credentials
+          name: s3-credentials-pgauthentik
           key: aws_access_key_id
         secretAccessKey:
-          name: oci-backup-credentials
+          name: s3-credentials-pgauthentik
           key: aws_secret_access_key
       wal:
         compression: gzip

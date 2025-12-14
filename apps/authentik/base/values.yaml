@@ -6,18 +6,18 @@ global:
           name: authentik-secret-key
           key: secret-key
     - name: AUTHENTIK_POSTGRESQL__HOST
-      value: authentik-rw.authentik.svc.cluster.local
+      value: authentik-pg-rw.authentik.svc.cluster.local
     - name: AUTHENTIK_POSTGRESQL__NAME
       value: authentikdb
     - name: AUTHENTIK_POSTGRESQL__USER
       valueFrom:
         secretKeyRef:
-          name: authentik-app
+          name: authentik-pg-app
           key: username
     - name: AUTHENTIK_POSTGRESQL__PASSWORD
       valueFrom:
         secretKeyRef:
-          name: authentik-app
+          name: authentik-pg-app
           key: password
 
 server:
