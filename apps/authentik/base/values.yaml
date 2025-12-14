@@ -47,6 +47,9 @@ worker:
 redis:
   enabled: true
   master:
+    persistence:
+      storageClass: local-path
+      size: 5Gi
     resources:
       requests:
         cpu: 50m
