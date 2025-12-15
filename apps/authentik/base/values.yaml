@@ -33,6 +33,18 @@ server:
       memory: 512Mi
   autoscaling:
     enabled: false
+  metrics:
+    enabled: true
+    # serviceMonitor:
+    #   enabled: true
+  volumes:
+    - name: shm
+      emptyDir:
+        medium: Memory
+        sizeLimit: 512Mi
+  volumeMounts:
+    - name: shm
+      mountPath: /dev/shm
 
 worker:
   replicas: 1
