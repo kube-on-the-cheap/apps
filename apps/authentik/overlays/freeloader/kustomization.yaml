@@ -6,5 +6,6 @@ resources:
   - backup.cnpg.yaml
   - secret-key.externalsecret.yaml
   - s3-credentials-pgauthentik-sync.yaml
+  - email-credentials.externalsecret.yaml
   - httproute.yaml
   - tailscale-ingress.yaml

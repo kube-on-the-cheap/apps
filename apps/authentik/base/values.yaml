@@ -19,6 +19,16 @@ global:
         secretKeyRef:
           name: authentik-pg-app
           key: password
+    - name: AUTHENTIK_EMAIL__USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: email-credentials
+          key: username
+    - name: AUTHENTIK_EMAIL__PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: email-credentials
+          key: password
 
 server:
   ingress:
@@ -72,3 +82,9 @@ redis:
 
 postgresql:
   enabled: false
+
+email:
+  host: smtp.email.eu-frankfurt-1.oci.oraclecloud.com
+  port: 587
+  use_tls: true
+  from: do-not-reply@mail.cloud.blacksd.tech
