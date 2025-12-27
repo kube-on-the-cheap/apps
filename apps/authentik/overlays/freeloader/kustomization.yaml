@@ -4,6 +4,7 @@ resources:
   - ../../base
   - cluster.cnpg.yaml
   - backup.cnpg.yaml
+  - objectstore.barman.yaml
   - secret-key.externalsecret.yaml
   - s3-credentials-pgauthentik-sync.yaml
   - email-credentials.externalsecret.yaml

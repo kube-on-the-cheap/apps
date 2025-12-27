@@ -5,7 +5,12 @@ metadata:
   name: scheduled-daily-pgauthentik-backup
   namespace: authentik
 spec:
-  schedule: "0 1 * * *"  # Daily at 1:00 AM UTC
+  schedule: "0 0 */4 * * *" # Every four hours
   backupOwnerReference: self
   cluster:
     name: authentik-pg
+  method: plugin
+  pluginConfiguration:
+    name: barman-cloud.cloudnative-pg.io
+    parameters:
+      barmanObjectName: authentik-s3-backup
