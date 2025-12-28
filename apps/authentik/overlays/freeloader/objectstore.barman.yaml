@@ -5,6 +5,12 @@ metadata:
   name: authentik-s3-backup
   namespace: authentik
 spec:
+  instanceSidecarConfiguration:
+    env:
+      - name: AWS_REQUEST_CHECKSUM_CALCULATION
+        value: when_required
+      - name: AWS_RESPONSE_CHECKSUM_VALIDATION
+        value: when_required
   configuration:
     destinationPath: s3://pgauthentik/backups
     endpointURL: https://froaw0vigiem.compat.objectstorage.eu-frankfurt-1.oraclecloud.com
@@ -21,7 +27,4 @@ spec:
     data:
       compression: gzip
       jobs: 1
-      # Disable multipart uploads for Oracle Cloud compatibility
-      # Oracle Cloud S3 requires Content-Length headers that barman doesn't send
-      additionalCommandArgs: ["--max-bandwidth", "52428800"]  # 50MB/s limit to avoid chunking
-  retentionPolicy: 3d # Keep backups for 3 days to minimize disk usage
+  retentionPolicy: 1d # Keep backups for 3 days to minimize disk usage
