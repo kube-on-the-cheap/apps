@@ -1,0 +1,87 @@
+zitadel:
+  # Masterkey is provided via ExternalSecret
+  masterkeySecretName: zitadel-masterkey
+
+  configmapConfig:
+    ExternalDomain: auth.cloud.blacksd.tech
+    ExternalSecure: true
+    ExternalPort: 443
+
+    TLS:
+      Enabled: false
+
+    Database:
+      Postgres:
+        Host: zitadel-pg-rw.zitadel.svc.cluster.local
+        Port: 5432
+        Database: zitadel
+        MaxOpenConns: 20
+        MaxIdleConns: 10
+        MaxConnLifetime: 30m
+        MaxConnIdleTime: 5m
+        User:
+          Username: zitadel
+          SSL:
+            Mode: disable
+        Admin:
+          Username: postgres
+          SSL:
+            Mode: disable
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+    ephemeral-storage: 1Gi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+    ephemeral-storage: 2Gi
+
+ingress:
+  enabled: false
+
+login:
+  enabled: true
+  ingress:
+    enabled: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+metrics:
+  enabled: true
+  # serviceMonitor:
+  #   enabled: true
+
+env:
+  - name: ZITADEL_DATABASE_POSTGRES_USER_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: zitadel-pg-app
+        key: password
+  - name: ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: zitadel-pg-superuser
+        key: password
+
+initJob:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+setupJob:
+  machinekeyWriter:
+    image:
+      repository: docker.io/alpine/k8s

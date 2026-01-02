@@ -1,0 +1,43 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: zitadel-pg
+  namespace: zitadel
+spec:
+  instances: 2
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.2
+
+  storage:
+    storageClass: openebs-lvm
+    size: 5Gi
+
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 125m
+    limits:
+      memory: 512Mi
+      cpu: 512m
+
+  enableSuperuserAccess: true
+
+  bootstrap:
+    initdb:
+      database: zitadel
+      owner: zitadel
+
+  postgresql:
+    parameters:
+      max_worker_processes: "4"
+      max_parallel_workers: "2"
+      max_replication_slots: "8"
+      max_slot_wal_keep_size: "5GB"  # Limit WAL retention to prevent disk exhaustion
+
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      enabled: true
+      parameters:
+        barmanObjectName: zitadel-s3-backup
+
+  priorityClassName: system-cluster-critical

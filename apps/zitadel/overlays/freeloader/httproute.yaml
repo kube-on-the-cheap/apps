@@ -1,0 +1,62 @@
+---
+# Admin interface - restricted to specific IP
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: zitadel-admin
+  namespace: zitadel
+spec:
+  parentRefs:
+    - name: external
+      namespace: envoy-gateway-system
+      sectionName: https
+  hostnames:
+    - auth.cloud.blacksd.tech
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /ui/console
+      backendRefs:
+        - name: zitadel
+          port: 8080
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: zitadel-admin-ip-filter
+  namespace: zitadel
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: zitadel-admin
+  authorization:
+    defaultAction: Deny
+    rules:
+      - action: Allow
+        principal:
+          clientCIDRs:
+            - 77.32.112.148/32
+---
+# Public routes - authentication flows and APIs
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: zitadel-public
+  namespace: zitadel
+spec:
+  parentRefs:
+    - name: external
+      namespace: envoy-gateway-system
+      sectionName: https
+  hostnames:
+    - auth.cloud.blacksd.tech
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: zitadel
+          port: 8080
