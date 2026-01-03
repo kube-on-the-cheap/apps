@@ -39,6 +39,28 @@ spec:
           clientCIDRs:
             - 77.32.112.148/32
 ---
+# Login UI - served by zitadel-login service
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: zitadel-login
+  namespace: zitadel
+spec:
+  parentRefs:
+    - name: external
+      namespace: envoy-gateway-system
+      sectionName: https
+  hostnames:
+    - auth.cloud.blacksd.tech
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /ui/v2/login
+      backendRefs:
+        - name: zitadel-login
+          port: 3000
+---
 # Public routes - authentication flows and APIs
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute

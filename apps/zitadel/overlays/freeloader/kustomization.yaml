@@ -8,4 +8,3 @@ resources:
   - masterkey.externalsecret.yaml
   - s3-credentials-pgzitadel-sync.yaml
   - httproute.yaml
-  - tailscale-ingress.yaml
