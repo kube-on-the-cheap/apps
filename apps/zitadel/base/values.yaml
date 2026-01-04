@@ -10,6 +10,16 @@ zitadel:
     TLS:
       Enabled: false
 
+    DefaultInstance:
+      SMTPConfiguration:
+        SMTP:
+          Host: smtp.email.eu-frankfurt-1.oci.oraclecloud.com:587
+          User: "" # Set via env var ZITADEL_DEFAULTINSTANCE_SMTPCONFIGURATION_SMTP_USER
+          Password: "" # Set via env var ZITADEL_DEFAULTINSTANCE_SMTPCONFIGURATION_SMTP_PASSWORD
+        TLS: true
+        From: do-not-reply@mail.cloud.blacksd.tech
+        FromName: ZITADEL
+
     Database:
       Postgres:
         Host: zitadel-pg-rw.zitadel.svc.cluster.local
@@ -70,6 +80,16 @@ env:
     valueFrom:
       secretKeyRef:
         name: zitadel-pg-superuser
+        key: password
+  - name: ZITADEL_DEFAULTINSTANCE_SMTPCONFIGURATION_SMTP_USER
+    valueFrom:
+      secretKeyRef:
+        name: email-credentials
+        key: username
+  - name: ZITADEL_DEFAULTINSTANCE_SMTPCONFIGURATION_SMTP_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: email-credentials
         key: password
 
 initJob:
