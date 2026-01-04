@@ -1,3 +1,7 @@
+image:
+  repository: ghcr.io/zitadel/zitadel
+  tag: v4.8.0
+
 zitadel:
   # Masterkey is provided via ExternalSecret
   masterkeySecretName: zitadel-masterkey
@@ -18,7 +22,7 @@ zitadel:
           Password: "" # Set via env var ZITADEL_DEFAULTINSTANCE_SMTPCONFIGURATION_SMTP_PASSWORD
         TLS: true
         From: do-not-reply@mail.cloud.blacksd.tech
-        FromName: ZITADEL
+        FromName: Zitadel Auth
 
     Database:
       Postgres:
@@ -55,6 +59,9 @@ ingress:
 
 login:
   enabled: true
+  image:
+    repository: ghcr.io/zitadel/zitadel-login
+    tag: v4.8.0
   ingress:
     enabled: false
   resources:
