@@ -1,6 +1,4 @@
 # Minecraft Bedrock Dedicated Server
-# Chart: https://github.com/itzg/minecraft-server-charts/tree/master/charts/minecraft-bedrock
-
 image:
   repository: docker.io/itzg/minecraft-bedrock-server
   tag: latest
