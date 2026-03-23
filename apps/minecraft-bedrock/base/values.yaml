@@ -31,7 +31,3 @@ resources:
   limits:
     cpu: "2"
     memory: 4Gi
-
-# Schedule on worker nodes only
-nodeSelector:
-  node-role.kubernetes.io/worker: ""
