@@ -1,0 +1,24 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: minecraft-bedrock
+  namespace: flux-system
+spec:
+  interval: 30m
+  timeout: 10m
+  releaseName: minecraft-bedrock
+  targetNamespace: minecraft-bedrock
+  chart:
+    spec:
+      chart: minecraft-bedrock
+      version: "3.3.0"
+      sourceRef:
+        kind: HelmRepository
+        name: minecraft-server-charts
+  driftDetection:
+    mode: enabled
+  valuesFrom:
+    - kind: ConfigMap
+      name: minecraft-bedrock-values
+      valuesKey: values.yaml
