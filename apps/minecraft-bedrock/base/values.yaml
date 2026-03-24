@@ -18,7 +18,7 @@ minecraftServer:
   serverPort: 19132
   serviceType: LoadBalancer
   enableLanVisibility: true
-  allowCheats: true
+  cheats: true
 
 persistence:
   storageClass: openebs-rawfile
