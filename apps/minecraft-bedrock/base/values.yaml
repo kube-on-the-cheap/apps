@@ -7,7 +7,7 @@ image:
 # Server properties
 minecraftServer:
   eula: "TRUE"
-  version: "LATEST"
+  version: "1.26.3.1"
   serverName: Terra di SempreInMezzo
   levelName: Polli con e senza controller.
   gameMode: creative
