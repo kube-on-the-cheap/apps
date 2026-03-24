@@ -17,6 +17,7 @@ minecraftServer:
   # Bedrock default port
   serverPort: 19132
   serviceType: LoadBalancer
+  enableLanVisibility: true
 
 persistence:
   storageClass: openebs-rawfile
