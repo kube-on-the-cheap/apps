@@ -1,5 +1,7 @@
 file://*
 s3://*
+http://zitadel:8080/
 https://.*\.oraclecloud\.com/
 https://charts.zitadel.com/*
+https://github.com/zitadel/zitadel/issues/11163
 https://itzg.github.io/minecraft-server-charts/
