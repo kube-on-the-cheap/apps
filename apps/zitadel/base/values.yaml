@@ -1,6 +1,6 @@
 image:
   repository: ghcr.io/zitadel/zitadel
-  tag: v4.8.0
+  tag: v4.13.1
 
 zitadel:
   # Masterkey is provided via ExternalSecret
@@ -61,7 +61,7 @@ login:
   enabled: true
   image:
     repository: ghcr.io/zitadel/zitadel-login
-    tag: v4.8.0
+    tag: v4.13.1
   ingress:
     enabled: false
   # Workaround for https://github.com/zitadel/zitadel/issues/11163
@@ -114,7 +114,4 @@ initJob:
       cpu: 250m
       memory: 256Mi
 
-setupJob:
-  machinekeyWriter:
-    image:
-      repository: docker.io/alpine/k8s
+setupJob: {}

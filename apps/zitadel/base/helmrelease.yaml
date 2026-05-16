@@ -12,7 +12,7 @@ spec:
   chart:
     spec:
       chart: zitadel
-      version: "9.13.0"
+      version: "9.34.1"
       sourceRef:
         kind: HelmRepository
         name: zitadel
@@ -22,22 +22,3 @@ spec:
     - kind: ConfigMap
       name: zitadel-values
       valuesKey: values.yaml
-  # Workaround for https://github.com/zitadel/zitadel-charts/issues/492
-  # CRI-O v1.34+ enforces fully qualified image names
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: zitadel
-            patch: |
-              - op: replace
-                path: /spec/template/spec/initContainers/0/image
-                value: docker.io/wait4x/wait4x:3.6
-          - target:
-              kind: Deployment
-              name: zitadel-login
-            patch: |
-              - op: replace
-                path: /spec/template/spec/initContainers/0/image
-                value: docker.io/wait4x/wait4x:3.6
