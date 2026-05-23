@@ -1,0 +1,38 @@
+image:
+  registry: docker.io
+  repository: vaultwarden/server
+  tag: "1.36.0-alpine"
+  pullPolicy: IfNotPresent
+
+replicas: 1
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+ingress:
+  enabled: false
+
+database:
+  type: "postgresql"
+  existingSecret: "vaultwarden-pg-app"
+  existingSecretKey: "uri"
+
+webVaultEnabled: "true"
+
+signupsAllowed: false
+signupsVerify: "true"
+invitationsAllowed: true
+
+adminToken:
+  existingSecret: "vaultwarden-admin-token"
+  existingSecretKey: "token"
+
+rocket:
+  address: "0.0.0.0"
+  port: "8080"
+  workers: "10"

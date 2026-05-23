@@ -1,0 +1,42 @@
+image:
+  registry: ghcr.io
+  repository: paperless-ngx/paperless-ngx
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+config:
+  database:
+    engine: "postgresql"
+    host: "paperless-ngx-pg-rw.paperless-ngx.svc.cluster.local"
+    port: 5432
+    name: "paperless"
+    user: "paperless"
+    existingSecret:
+      name: "paperless-ngx-pg-app"
+      passKey: "password"
+    sslmode: "disable"
+
+env:
+  PAPERLESS_USE_X_FORWARD_HOST: true
+  PAPERLESS_ENABLE_FLOWER: false
+  PAPERLESS_OCR_LANGUAGE: "eng+ita"
+
+ingress:
+  enabled: false
+
+# Disable bundled postgresql; use CNPG cluster instead
+postgresql:
+  enabled: false
+
+# Bundled Valkey (Redis-compatible) for task queue
+valkey:
+  internal: true

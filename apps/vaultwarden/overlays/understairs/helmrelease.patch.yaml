@@ -1,0 +1,16 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vaultwarden
+spec:
+  values:
+    domain: "https://vault.cloud.blacksd.tech"
+    storage:
+      data:
+        name: "vaultwarden-data"
+        size: "2Gi"
+        class: "openebs-rawfile"
+        path: "/data"
+        keepPvc: true
+        accessMode: "ReadWriteOnce"
