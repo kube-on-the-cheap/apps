@@ -30,5 +30,5 @@ spec:
                 name: paperless-ngx
               spec:
                 strategy:
-                  $patch: replace
                   type: Recreate
+                  rollingUpdate: null
