@@ -6,7 +6,7 @@ metadata:
 spec:
   values:
     config:
-      url: "https://paperless.cloud.blacksd.tech"
+      url: "https://paperless.homelab.blacksd.tech"
     persistence:
       enabled: true
       storageClass: "openebs-rawfile"

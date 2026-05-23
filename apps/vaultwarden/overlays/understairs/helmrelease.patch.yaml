@@ -5,7 +5,7 @@ metadata:
   name: vaultwarden
 spec:
   values:
-    domain: "https://vault.cloud.blacksd.tech"
+    domain: "https://vault.homelab.blacksd.tech"
     storage:
       data:
         name: "vaultwarden-data"

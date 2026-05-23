@@ -9,9 +9,8 @@ spec:
   parentRefs:
     - name: external
       namespace: envoy-gateway-system
-      sectionName: https
   hostnames:
-    - vault.cloud.blacksd.tech
+    - vault.homelab.blacksd.tech
   rules:
     - matches:
         - path:
@@ -49,9 +48,8 @@ spec:
   parentRefs:
     - name: external
       namespace: envoy-gateway-system
-      sectionName: https
   hostnames:
-    - vault.cloud.blacksd.tech
+    - vault.homelab.blacksd.tech
   rules:
     - matches:
         - path:
