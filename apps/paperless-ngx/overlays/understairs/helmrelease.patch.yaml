@@ -15,3 +15,20 @@ spec:
     valkey:
       dataStorage:
         className: "openebs-rawfile"
+  postRenderers:
+    # PVC is ReadWriteOnce; Recreate strategy prevents two pods holding the
+    # same data dir during rollouts (avoids migration_lock contention).
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: paperless-ngx
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: paperless-ngx
+              spec:
+                strategy:
+                  $patch: replace
+                  type: Recreate
