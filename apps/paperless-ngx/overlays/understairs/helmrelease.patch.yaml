@@ -32,3 +32,20 @@ spec:
                 strategy:
                   type: Recreate
                   rollingUpdate: null
+          # Init takes ~100s on this hardware (PG migration check + django checks)
+          # and the chart doesn't expose startupProbe. Without it, liveness/readiness
+          # fire before granian binds :8000 and the pod gets killed mid-init.
+          - target:
+              kind: Deployment
+              name: paperless-ngx
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/startupProbe
+                value:
+                  httpGet:
+                    path: /
+                    port: http
+                  initialDelaySeconds: 30
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 30

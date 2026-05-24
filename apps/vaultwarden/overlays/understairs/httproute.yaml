@@ -18,7 +18,7 @@ spec:
             value: /admin
       backendRefs:
         - name: vaultwarden
-          port: 8080
+          port: 80
 ---
 apiVersion: gateway.envoyproxy.io/v1alpha1
 kind: SecurityPolicy
@@ -57,4 +57,4 @@ spec:
             value: /
       backendRefs:
         - name: vaultwarden
-          port: 8080
+          port: 80
