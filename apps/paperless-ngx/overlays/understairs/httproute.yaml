@@ -36,4 +36,5 @@ spec:
       - action: Allow
         principal:
           clientCIDRs:
-            - 77.32.112.148/32
+            - 192.168.20.0/24
+            - 100.64.0.0/10
