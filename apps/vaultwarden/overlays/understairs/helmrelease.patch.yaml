@@ -14,3 +14,15 @@ spec:
         path: "/data"
         keepPvc: true
         accessMode: "ReadWriteOnce"
+    smtp:
+      host: smtp.email.eu-frankfurt-1.oci.oraclecloud.com
+      port: 587
+      from: do-not-reply@mail.cloud.blacksd.tech
+      fromName: Marco's Homelab - Vaultwarden
+      security: starttls
+      authMechanism: Plain
+      existingSecret: vaultwarden-smtp
+      username:
+        existingSecretKey: username
+      password:
+        existingSecretKey: password
