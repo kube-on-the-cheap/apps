@@ -7,6 +7,7 @@ spec:
   values:
     general:
       domain: "bitwarden.homelab.blacksd.tech"
+      admins: "marco.bulgarini@gmail.com"
       gateway:
         enabled: true
         parentRefs:
@@ -19,3 +20,48 @@ spec:
         smtpSsl: "false"
         smtpStartTls: "true"
         smtpTrustServer: "false"
+    # SMTP credentials live in the `smtp-creds` Secret (synced from OPS vault by
+    # ClusterExternalSecret smtp-cluster-sync). The chart loads `bitwarden-custom-secret`
+    # via envFrom on every component; we layer the smtp Secret on top with a prefix so
+    # its `username`/`password` keys appear as the chart-expected env vars.
+    component:
+      admin:
+        extraEnvFrom:
+          - secretRef:
+              name: smtp-creds
+            prefix: "globalSettings__mail__smtp__"
+      api:
+        extraEnvFrom:
+          - secretRef:
+              name: smtp-creds
+            prefix: "globalSettings__mail__smtp__"
+      attachments:
+        extraEnvFrom:
+          - secretRef:
+              name: smtp-creds
+            prefix: "globalSettings__mail__smtp__"
+      events:
+        extraEnvFrom:
+          - secretRef:
+              name: smtp-creds
+            prefix: "globalSettings__mail__smtp__"
+      icons:
+        extraEnvFrom:
+          - secretRef:
+              name: smtp-creds
+            prefix: "globalSettings__mail__smtp__"
+      identity:
+        extraEnvFrom:
+          - secretRef:
+              name: smtp-creds
+            prefix: "globalSettings__mail__smtp__"
+      notifications:
+        extraEnvFrom:
+          - secretRef:
+              name: smtp-creds
+            prefix: "globalSettings__mail__smtp__"
+      sso:
+        extraEnvFrom:
+          - secretRef:
+              name: smtp-creds
+            prefix: "globalSettings__mail__smtp__"

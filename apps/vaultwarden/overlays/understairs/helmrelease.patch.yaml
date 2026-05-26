@@ -21,7 +21,7 @@ spec:
       fromName: Marco's Homelab - Vaultwarden
       security: starttls
       authMechanism: Plain
-      existingSecret: vaultwarden-smtp
+      existingSecret: smtp-creds
       username:
         existingSecretKey: username
       password:
