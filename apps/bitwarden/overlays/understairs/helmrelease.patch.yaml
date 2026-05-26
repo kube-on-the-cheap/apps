@@ -1,0 +1,21 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bitwarden
+spec:
+  values:
+    general:
+      domain: "bitwarden.homelab.blacksd.tech"
+      gateway:
+        enabled: true
+        parentRefs:
+          - name: external
+            namespace: envoy-gateway-system
+      email:
+        replyToEmail: do-not-reply@mail.cloud.blacksd.tech
+        smtpHost: smtp.email.eu-frankfurt-1.oci.oraclecloud.com
+        smtpPort: "587"
+        smtpSsl: "false"
+        smtpStartTls: "true"
+        smtpTrustServer: "false"
