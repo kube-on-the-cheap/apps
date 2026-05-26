@@ -1,0 +1,98 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ghostfolio
+  namespace: ghostfolio
+  labels:
+    app.kubernetes.io/name: ghostfolio
+    app.kubernetes.io/component: web
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ghostfolio
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ghostfolio
+        app.kubernetes.io/component: web
+    spec:
+      containers:
+        - name: ghostfolio
+          image: docker.io/ghostfolio/ghostfolio:3.5.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3333
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "3333"
+            - name: HOST
+              value: "0.0.0.0"
+            - name: REDIS_HOST
+              value: ghostfolio-redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              value: ""
+            # Compose DATABASE_URL from CNPG's libpq URI plus connect_timeout
+            # so the first migration doesn't fail under load on slow nodes.
+            - name: GHOSTFOLIO_DB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: ghostfolio-pg-app
+                  key: uri
+            - name: DATABASE_URL
+              value: "$(GHOSTFOLIO_DB_URI)?connect_timeout=300"
+          envFrom:
+            - secretRef:
+                name: ghostfolio-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 384Mi
+            limits:
+              cpu: 1000m
+              memory: 768Mi
+          startupProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ghostfolio
+  namespace: ghostfolio
+spec:
+  selector:
+    app.kubernetes.io/name: ghostfolio
+    app.kubernetes.io/component: web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
