@@ -32,16 +32,46 @@ secrets:
 database:
   enabled: false
 
-# Liveness/readiness probes are widened across the board because pi1 is a slow ARM
-# node and .NET cold-starts blow past the chart's 30s defaults, killing pods mid-startup.
+# Probes are widened across the board because pi1 is a slow ARM node and .NET
+# cold-starts blow past the chart's 30s defaults, killing pods mid-startup.
+#
+# Postgres connection: CNPG's bitwarden-pg-app secret holds a libpq-style "uri"
+# (postgresql://user:pass@host:port/db). Npgsql's EF Core path constructs
+# NpgsqlConnectionStringBuilder directly, which rejects URI format. We inject
+# host/port/user/password/dbname separately and compose the key=value form
+# (Host=...;Port=...;...) that NpgsqlConnectionStringBuilder accepts. The
+# referencing env var uses $(VAR) substitution; Kubernetes resolves in order,
+# so the composed var must be listed last.
 component:
   admin:
     extraEnv:
-      - name: globalSettings__postgreSql__connectionString
+      - name: BW_DB_HOST
         valueFrom:
           secretKeyRef:
             name: bitwarden-pg-app
-            key: uri
+            key: host
+      - name: BW_DB_PORT
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: port
+      - name: BW_DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: username
+      - name: BW_DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: password
+      - name: BW_DB_NAME
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: dbname
+      - name: globalSettings__postgreSql__connectionString
+        value: "Host=$(BW_DB_HOST);Port=$(BW_DB_PORT);Username=$(BW_DB_USER);Password=$(BW_DB_PASS);Database=$(BW_DB_NAME)"
     livenessProbe:
       httpGet:
         path: /alive
@@ -67,11 +97,33 @@ component:
         cpu: "250m"
   api:
     extraEnv:
-      - name: globalSettings__postgreSql__connectionString
+      - name: BW_DB_HOST
         valueFrom:
           secretKeyRef:
             name: bitwarden-pg-app
-            key: uri
+            key: host
+      - name: BW_DB_PORT
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: port
+      - name: BW_DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: username
+      - name: BW_DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: password
+      - name: BW_DB_NAME
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: dbname
+      - name: globalSettings__postgreSql__connectionString
+        value: "Host=$(BW_DB_HOST);Port=$(BW_DB_PORT);Username=$(BW_DB_USER);Password=$(BW_DB_PASS);Database=$(BW_DB_NAME)"
     livenessProbe:
       httpGet:
         path: /alive
@@ -97,11 +149,33 @@ component:
         cpu: "250m"
   attachments:
     extraEnv:
-      - name: globalSettings__postgreSql__connectionString
+      - name: BW_DB_HOST
         valueFrom:
           secretKeyRef:
             name: bitwarden-pg-app
-            key: uri
+            key: host
+      - name: BW_DB_PORT
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: port
+      - name: BW_DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: username
+      - name: BW_DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: password
+      - name: BW_DB_NAME
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: dbname
+      - name: globalSettings__postgreSql__connectionString
+        value: "Host=$(BW_DB_HOST);Port=$(BW_DB_PORT);Username=$(BW_DB_USER);Password=$(BW_DB_PASS);Database=$(BW_DB_NAME)"
     livenessProbe:
       httpGet:
         path: /alive
@@ -127,11 +201,33 @@ component:
         cpu: "100m"
   events:
     extraEnv:
-      - name: globalSettings__postgreSql__connectionString
+      - name: BW_DB_HOST
         valueFrom:
           secretKeyRef:
             name: bitwarden-pg-app
-            key: uri
+            key: host
+      - name: BW_DB_PORT
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: port
+      - name: BW_DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: username
+      - name: BW_DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: password
+      - name: BW_DB_NAME
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: dbname
+      - name: globalSettings__postgreSql__connectionString
+        value: "Host=$(BW_DB_HOST);Port=$(BW_DB_PORT);Username=$(BW_DB_USER);Password=$(BW_DB_PASS);Database=$(BW_DB_NAME)"
     livenessProbe:
       httpGet:
         path: /alive
@@ -157,11 +253,33 @@ component:
         cpu: "100m"
   icons:
     extraEnv:
-      - name: globalSettings__postgreSql__connectionString
+      - name: BW_DB_HOST
         valueFrom:
           secretKeyRef:
             name: bitwarden-pg-app
-            key: uri
+            key: host
+      - name: BW_DB_PORT
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: port
+      - name: BW_DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: username
+      - name: BW_DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: password
+      - name: BW_DB_NAME
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: dbname
+      - name: globalSettings__postgreSql__connectionString
+        value: "Host=$(BW_DB_HOST);Port=$(BW_DB_PORT);Username=$(BW_DB_USER);Password=$(BW_DB_PASS);Database=$(BW_DB_NAME)"
     livenessProbe:
       httpGet:
         path: /alive
@@ -187,11 +305,33 @@ component:
         cpu: "100m"
   identity:
     extraEnv:
-      - name: globalSettings__postgreSql__connectionString
+      - name: BW_DB_HOST
         valueFrom:
           secretKeyRef:
             name: bitwarden-pg-app
-            key: uri
+            key: host
+      - name: BW_DB_PORT
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: port
+      - name: BW_DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: username
+      - name: BW_DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: password
+      - name: BW_DB_NAME
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: dbname
+      - name: globalSettings__postgreSql__connectionString
+        value: "Host=$(BW_DB_HOST);Port=$(BW_DB_PORT);Username=$(BW_DB_USER);Password=$(BW_DB_PASS);Database=$(BW_DB_NAME)"
     livenessProbe:
       httpGet:
         path: /alive
@@ -217,11 +357,33 @@ component:
         cpu: "250m"
   notifications:
     extraEnv:
-      - name: globalSettings__postgreSql__connectionString
+      - name: BW_DB_HOST
         valueFrom:
           secretKeyRef:
             name: bitwarden-pg-app
-            key: uri
+            key: host
+      - name: BW_DB_PORT
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: port
+      - name: BW_DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: username
+      - name: BW_DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: password
+      - name: BW_DB_NAME
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: dbname
+      - name: globalSettings__postgreSql__connectionString
+        value: "Host=$(BW_DB_HOST);Port=$(BW_DB_PORT);Username=$(BW_DB_USER);Password=$(BW_DB_PASS);Database=$(BW_DB_NAME)"
     livenessProbe:
       httpGet:
         path: /alive
@@ -247,19 +409,35 @@ component:
         cpu: "100m"
   scim:
     enabled: false
-    extraEnv:
-      - name: globalSettings__postgreSql__connectionString
-        valueFrom:
-          secretKeyRef:
-            name: bitwarden-pg-app
-            key: uri
   sso:
     extraEnv:
-      - name: globalSettings__postgreSql__connectionString
+      - name: BW_DB_HOST
         valueFrom:
           secretKeyRef:
             name: bitwarden-pg-app
-            key: uri
+            key: host
+      - name: BW_DB_PORT
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: port
+      - name: BW_DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: username
+      - name: BW_DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: password
+      - name: BW_DB_NAME
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: dbname
+      - name: globalSettings__postgreSql__connectionString
+        value: "Host=$(BW_DB_HOST);Port=$(BW_DB_PORT);Username=$(BW_DB_USER);Password=$(BW_DB_PASS);Database=$(BW_DB_NAME)"
     livenessProbe:
       httpGet:
         path: /alive
@@ -285,11 +463,33 @@ component:
         cpu: "100m"
   web:
     extraEnv:
-      - name: globalSettings__postgreSql__connectionString
+      - name: BW_DB_HOST
         valueFrom:
           secretKeyRef:
             name: bitwarden-pg-app
-            key: uri
+            key: host
+      - name: BW_DB_PORT
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: port
+      - name: BW_DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: username
+      - name: BW_DB_PASS
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: password
+      - name: BW_DB_NAME
+        valueFrom:
+          secretKeyRef:
+            name: bitwarden-pg-app
+            key: dbname
+      - name: globalSettings__postgreSql__connectionString
+        value: "Host=$(BW_DB_HOST);Port=$(BW_DB_PORT);Username=$(BW_DB_USER);Password=$(BW_DB_PASS);Database=$(BW_DB_NAME)"
     livenessProbe:
       httpGet:
         path: /
