@@ -7,7 +7,7 @@ general:
     enabled: false
   gateway:
     enabled: false
-  disableUserRegistration: "true"
+  disableUserRegistration: "false"
   admins: ""
   email:
     replyToEmail: "no-reply@bitwarden.localhost"
