@@ -32,6 +32,8 @@ secrets:
 database:
   enabled: false
 
+# Liveness/readiness probes are widened across the board because pi1 is a slow ARM
+# node and .NET cold-starts blow past the chart's 30s defaults, killing pods mid-startup.
 component:
   admin:
     extraEnv:
@@ -40,6 +42,22 @@ component:
           secretKeyRef:
             name: bitwarden-pg-app
             key: uri
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 300
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 60
+      periodSeconds: 15
+      failureThreshold: 5
+      timeoutSeconds: 10
     resources:
       requests:
         memory: "192Mi"
@@ -54,6 +72,22 @@ component:
           secretKeyRef:
             name: bitwarden-pg-app
             key: uri
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 300
+      periodSeconds: 60
+      failureThreshold: 5
+      timeoutSeconds: 30
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 30
     resources:
       requests:
         memory: "192Mi"
@@ -68,6 +102,22 @@ component:
           secretKeyRef:
             name: bitwarden-pg-app
             key: uri
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 180
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      failureThreshold: 5
+      timeoutSeconds: 10
     resources:
       requests:
         memory: "96Mi"
@@ -82,6 +132,22 @@ component:
           secretKeyRef:
             name: bitwarden-pg-app
             key: uri
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 180
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      failureThreshold: 5
+      timeoutSeconds: 10
     resources:
       requests:
         memory: "96Mi"
@@ -96,6 +162,22 @@ component:
           secretKeyRef:
             name: bitwarden-pg-app
             key: uri
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 180
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      failureThreshold: 5
+      timeoutSeconds: 10
     resources:
       requests:
         memory: "96Mi"
@@ -110,6 +192,22 @@ component:
           secretKeyRef:
             name: bitwarden-pg-app
             key: uri
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 300
+      periodSeconds: 60
+      failureThreshold: 5
+      timeoutSeconds: 30
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 30
     resources:
       requests:
         memory: "192Mi"
@@ -124,6 +222,22 @@ component:
           secretKeyRef:
             name: bitwarden-pg-app
             key: uri
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 180
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      failureThreshold: 5
+      timeoutSeconds: 10
     resources:
       requests:
         memory: "96Mi"
@@ -146,6 +260,22 @@ component:
           secretKeyRef:
             name: bitwarden-pg-app
             key: uri
+    livenessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 300
+      periodSeconds: 60
+      failureThreshold: 5
+      timeoutSeconds: 30
+    readinessProbe:
+      httpGet:
+        path: /alive
+        port: 5000
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 30
     resources:
       requests:
         memory: "96Mi"
@@ -160,6 +290,22 @@ component:
           secretKeyRef:
             name: bitwarden-pg-app
             key: uri
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 5000
+      initialDelaySeconds: 120
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 5000
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      failureThreshold: 5
+      timeoutSeconds: 10
     resources:
       requests:
         memory: "64Mi"
