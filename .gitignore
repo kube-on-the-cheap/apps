@@ -8,3 +8,6 @@
 
 # env vars to govern the Control Plane access
 .envrc
+
+# Implementation plans are throwaway execution artifacts; specs are kept
+docs/superpowers/plans/
