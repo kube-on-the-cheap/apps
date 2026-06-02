@@ -51,21 +51,56 @@ If Calibre-Web's `metadata.db` corrupts in practice (concurrent-write incident, 
 
 ### Identity / file ownership
 
-All NFS-backed files must be readable and writable as **UID 1000, GID 1000**. This is the linuxserver.io default for Calibre-Web and what we'll explicitly set for Audiobookshelf via `securityContext`.
+All NFS-backed files are read and written as **UID 1027, GID 100** — the `k8s-nfs` DSM user (manually created) and the default `users` group on the Synology. The pod manifests pin this via `securityContext` and image-specific env vars; the NAS-side share contents are pre-chowned to match.
 
-On the Synology side, the shared folders' NFS export permission must squash all clients to a user/group that owns the files on the NAS:
+**DSM-side setup** (one-time, done by user before implementation):
 
-- DSM → Shared Folder → NFS Permissions → Squash: **Map all users to admin** (or to a dedicated user with UID 1000)
-- Ownership of the share contents: UID 1000 / GID 1000
+- Create DSM user `k8s-nfs` with no DSM login rights, member of `users` group. (UID assigned by DSM: 1027.)
+- Create shared folders `/volume1/Apps/calibre-library` and `/volume1/Apps/audiobookshelf-media`.
+- Grant `k8s-nfs` read/write on both shared folders.
+- NFS Permissions on each shared folder:
+  - Squash: **No mapping**. (DSM only offers `admin` / `guest` as custom squash targets, so squashing to `k8s-nfs` is not possible; "no mapping" is the cleanest path given we control `runAsUser` in the pod.)
+  - Read/Write.
+  - Asynchronous: enabled.
+  - Allow connections from non-privileged ports: enabled (the CSI driver uses high ports).
+  - Allow users to access mounted subfolders: enabled.
+  - Source IPs: cluster subnet (`192.168.20.0/24`) or specific node IPs.
+- SSH into the NAS and pre-set ownership/permissions on each share root:
+  ```
+  chown -R k8s-nfs:users /volume1/Apps/calibre-library
+  chmod -R g+rwsX /volume1/Apps/calibre-library
+  chown -R k8s-nfs:users /volume1/Apps/audiobookshelf-media
+  chmod -R g+rwsX /volume1/Apps/audiobookshelf-media
+  ```
+  The `g+s` (setgid) bit on directories ensures new files inherit group `users`, which is what makes SMB coexistence work (see below).
+- Enable NFSv4 in DSM (Control Panel → File Services → NFS), domain set to `homelab.blacksd.tech`. Documented for the record; node-side `idmapd` is left at defaults unless permission denials surface.
 
-Pod-side, both Deployments set:
+**Pod-side**, both Deployments set:
 
 ```yaml
 securityContext:
-  runAsUser: 1000
-  runAsGroup: 1000
-  fsGroup: 1000
+  runAsUser: 1027
+  runAsGroup: 100
+  fsGroup: 100
 ```
+
+Image-specific env vars also pin identity:
+
+- Calibre-Web (linuxserver.io image): `PUID=1027`, `PGID=100`, `UMASK=002`.
+- Audiobookshelf: `AUDIOBOOKSHELF_UID=1027`, `AUDIOBOOKSHELF_GID=100`. `UMASK_SET=002` if the image supports it (verify at implementation time; otherwise rely on default).
+
+### SMB coexistence
+
+The user accesses the same shared folders via SMB from a Mac/laptop using a personal DSM user account (UID e.g. 1026). Without coordination, SMB-written files would land owned `1026:users` and the pod (running as 1027) couldn't write them.
+
+The fix is standard Unix shared-directory hygiene, applied once on the NAS:
+
+- Group ownership of the share contents is `users` (GID 100) — both `k8s-nfs` and the personal DSM user are members.
+- `chmod g+rwsX` recursively on the share root sets group-writable + setgid on directories.
+- `umask 002` on both protocols ensures newly created files are group-writable.
+- Result: files written via SMB land as `<personal-uid>:users` with mode `0664`/`0775`. Files written via NFS land as `1027:users` with mode `0664`/`0775`. Both identities can read and write everything because group `users` has rwx.
+
+This is documented here because it's a NAS-side concern that affects whether the cluster apps work; the cluster manifests themselves don't enforce it.
 
 ### Networking
 
@@ -125,7 +160,7 @@ Note: `ghostfolio.yaml` is removed; `apps/ghostfolio/` stays on disk.
 
 **Environment:**
 
-- `PUID=1000`, `PGID=1000`, `TZ=Europe/Rome`
+- `PUID=1027`, `PGID=100`, `UMASK=002`, `TZ=Europe/Rome`
 - `DOCKER_MODS=linuxserver/mods:universal-calibre` to enable EPUB→other-format conversion via the embedded Calibre tooling (lets Calibre-Web do format conversion server-side without a separate Calibre headless pod)
 
 **Volumes:**
@@ -155,7 +190,7 @@ Limits are generous because the universal-calibre mod uses Calibre tooling for c
 **Environment:**
 
 - `TZ=Europe/Rome`
-- `AUDIOBOOKSHELF_UID=1000`, `AUDIOBOOKSHELF_GID=1000` (the image honors these)
+- `AUDIOBOOKSHELF_UID=1027`, `AUDIOBOOKSHELF_GID=100` (the image honors these)
 
 **Volumes:**
 
@@ -205,8 +240,8 @@ spec:
     driver: nfs.csi.k8s.io
     volumeHandle: calibre-web-library  # any unique string
     volumeAttributes:
-      server: <NAS_HOSTNAME_OR_IP>     # from user
-      share: <CALIBRE_EXPORT_PATH>     # from user, e.g. /volume1/calibre-library
+      server: nas.homelab.blacksd.tech
+      share: /volume1/Apps/calibre-library
 ```
 
 Matching PVC (`pvc-library.yaml`):
@@ -226,9 +261,7 @@ spec:
   volumeName: calibre-web-library
 ```
 
-Same shape for Audiobookshelf with `5Gi` and its own export path.
-
-The `<NAS_HOSTNAME_OR_IP>` and `<CALIBRE_EXPORT_PATH>` / `<AUDIOBOOKSHELF_EXPORT_PATH>` placeholders are filled in at implementation time using values the user provides.
+Same shape for Audiobookshelf with `5Gi` and `share: /volume1/Apps/audiobookshelf-media`.
 
 ## Platform repo work
 
@@ -290,18 +323,20 @@ infrastructure/<tier>/csi-driver-nfs/...   (Helm-based install)
 clusters/understairs/csi-driver-nfs.yaml   (Flux Kustomization)
 ```
 
-## Inputs required from user before implementation
+## Inputs (confirmed)
 
-1. **NFS server hostname or IP** for the Synology (e.g., `synology.lan` or `192.168.20.x`).
-2. **NFS export path for the Calibre library** (e.g., `/volume1/calibre-library`).
-3. **NFS export path for the audiobook library** (e.g., `/volume1/audiobooks`).
-4. **Confirmation** that the Synology NFS exports squash to UID 1000 / GID 1000 (or that file ownership on the NAS is already 1000:1000 with no squash).
+- **NFS server**: `nas.homelab.blacksd.tech`
+- **Calibre library export**: `/volume1/Apps/calibre-library` (to be created in DSM)
+- **Audiobookshelf media export**: `/volume1/Apps/audiobookshelf-media` (to be created in DSM)
+- **NFSv4 domain**: `homelab.blacksd.tech`
+- **Pod identity**: UID 1027 (`k8s-nfs`), GID 100 (`users`)
+- **Squash policy**: No mapping (DSM limitation — custom squash users not supported in the UI; "no mapping" + pinned `runAsUser` is the chosen path)
 
 ## Risks
 
 - **SQLite over NFS for Calibre-Web's `metadata.db`.** Mitigated by single-writer assumption and NFSv4.1 with locking. Backup before any Calibre desktop session that touches the library while the pod is running.
 - **`csi-driver-nfs` not present yet.** If the platform PR is not merged before the apps PR, PVCs stay `Pending` and the Deployments don't progress. This is a visible, recoverable failure mode, not silent corruption.
-- **UID/GID mismatch on Synology.** First-run permission denied is the obvious symptom. Fixed by adjusting the Synology export squash settings, not by changing the cluster manifests.
+- **UID/GID mismatch on Synology.** First-run permission denied is the obvious symptom. Pod manifests pin `runAsUser: 1027` / `runAsGroup: 100`; NAS-side share contents must be pre-chowned `k8s-nfs:users` with setgid. If a future pod manifest accidentally drops `runAsUser`, writes fail visibly rather than corrupt silently.
 - **Universal-calibre mod size.** The linuxserver Calibre-Web image with `DOCKER_MODS=linuxserver/mods:universal-calibre` adds several hundred MB of Calibre tooling at pod startup. First pull is slow on understairs hardware; subsequent pulls are cached.
 
 ## Out-of-scope follow-ups
