@@ -22,8 +22,6 @@ spec:
         app.kubernetes.io/component: web
     spec:
       securityContext:
-        runAsUser: 1027
-        runAsGroup: 100
         fsGroup: 100
       containers:
         - name: calibre-web
