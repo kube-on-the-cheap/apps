@@ -1,0 +1,39 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: audiobookshelf
+  namespace: audiobookshelf
+spec:
+  parentRefs:
+    - name: external
+      namespace: envoy-gateway-system
+  hostnames:
+    - audiobooks.homelab.blacksd.tech
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: audiobookshelf
+          port: 80
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: audiobookshelf-ip-filter
+  namespace: audiobookshelf
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: audiobookshelf
+  authorization:
+    defaultAction: Deny
+    rules:
+      - action: Allow
+        principal:
+          clientCIDRs:
+            - 192.168.20.0/24
+            - 100.64.0.0/10
