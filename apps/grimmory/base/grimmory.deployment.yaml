@@ -73,7 +73,7 @@ spec:
             - name: SWAGGER_ENABLED
               value: "false"
             - name: FORCE_DISABLE_OIDC
-              value: "false"
+              value: "true"
           volumeMounts:
             - name: data
               mountPath: /app/data
