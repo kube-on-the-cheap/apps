@@ -37,6 +37,13 @@ spec:
                 sleep 2
               done
               echo "mariadb is up"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi
       containers:
         - name: grimmory
           image: ghcr.io/grimmory-tools/grimmory:v0.38.2
@@ -96,7 +103,7 @@ spec:
               port: http
             periodSeconds: 30
             failureThreshold: 3
-            timeoutSeconds: 5
+            timeoutSeconds: 10
           readinessProbe:
             httpGet:
               path: /api/v1/healthcheck
