@@ -238,13 +238,13 @@ Matching PVC binds via `volumeName: grimmory-library` and `storageClassName: ""`
 - Create shared folder `/volume1/Apps/grimmory`.
 - Grant `k8s-nfs` read/write on it.
 - NFS Permissions: No mapping squash, R/W, async, non-privileged ports, allow subfolder mounts, source IP `192.168.20.0/24`.
-- SSH to NAS:
+- SSH to NAS. **These commands are required before the pod can write to the share — without them, NFS writes get permission denied.** DSM's SSH shell requires `sudo` for chown on shared folders:
   ```
-  chown -R k8s-nfs:users /volume1/Apps/grimmory
-  chmod -R g+rwsX /volume1/Apps/grimmory
-  mkdir -p /volume1/Apps/grimmory/bookdrop
-  chown k8s-nfs:users /volume1/Apps/grimmory/bookdrop
-  chmod g+rwsX /volume1/Apps/grimmory/bookdrop
+  sudo chown -R k8s-nfs:users /volume1/Apps/grimmory/
+  sudo chmod -R g+rwsX /volume1/Apps/grimmory/
+  sudo mkdir -p /volume1/Apps/grimmory/bookdrop
+  sudo chown k8s-nfs:users /volume1/Apps/grimmory/bookdrop
+  sudo chmod g+rwsX /volume1/Apps/grimmory/bookdrop
   ```
 - Clone the local Calibre library contents into `/volume1/Apps/grimmory` (skipping `metadata.db` — Grimmory doesn't use it).
 

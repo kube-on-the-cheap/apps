@@ -65,12 +65,12 @@ All NFS-backed files are read and written as **UID 1027, GID 100** — the `k8s-
   - Allow connections from non-privileged ports: enabled (the CSI driver uses high ports).
   - Allow users to access mounted subfolders: enabled.
   - Source IPs: cluster subnet (`192.168.20.0/24`) or specific node IPs.
-- SSH into the NAS and pre-set ownership/permissions on each share root:
+- SSH into the NAS and pre-set ownership/permissions on each share root. **These commands are required before the pods can write to the shares — without them, NFS writes from the cluster get permission denied.** DSM's SSH shell requires `sudo` for chown on shared folders:
   ```
-  chown -R k8s-nfs:users /volume1/Apps/calibre-library
-  chmod -R g+rwsX /volume1/Apps/calibre-library
-  chown -R k8s-nfs:users /volume1/Apps/audiobookshelf-media
-  chmod -R g+rwsX /volume1/Apps/audiobookshelf-media
+  sudo chown -R k8s-nfs:users /volume1/Apps/calibre-library/
+  sudo chmod -R g+rwsX /volume1/Apps/calibre-library/
+  sudo chown -R k8s-nfs:users /volume1/Apps/audiobookshelf-media/
+  sudo chmod -R g+rwsX /volume1/Apps/audiobookshelf-media/
   ```
   The `g+s` (setgid) bit on directories ensures new files inherit group `users`, which is what makes SMB coexistence work (see below).
 - Enable NFSv4 in DSM (Control Panel → File Services → NFS), domain set to `homelab.blacksd.tech`. Documented for the record; node-side `idmapd` is left at defaults unless permission denials surface.
