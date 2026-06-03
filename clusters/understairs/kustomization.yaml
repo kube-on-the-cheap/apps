@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - audiobookshelf.yaml
   - calibre-web.yaml
+  - grimmory.yaml
   - minecraft-bedrock.yaml
   - paperless-ngx.yaml
   - vaultwarden.yaml
