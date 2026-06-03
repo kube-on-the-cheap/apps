@@ -21,6 +21,8 @@ spec:
         app.kubernetes.io/name: grimmory
         app.kubernetes.io/component: mariadb
     spec:
+      securityContext:
+        fsGroup: 100
       containers:
         - name: mariadb
           image: lscr.io/linuxserver/mariadb:11.4.8
