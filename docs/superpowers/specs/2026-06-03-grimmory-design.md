@@ -54,11 +54,13 @@ Single namespace `grimmory` holds:
 
 Grimmory's MariaDB-backed metadata model is the reason its DB does **not** go on NFS — unlike calibre-web's `metadata.db`, this is a real RDBMS with real concurrency guarantees and a real datadir. It lives on local block storage where it belongs.
 
-The `pvc-grimmory-library` PV uses the same NFS mount options as the calibre-web library PV (`nfsvers=4.0`, `hard`, `nconnect=4`, `rsize=1048576`, `wsize=1048576`). NFSv4.0 specifically, not 4.1 — see commit `9fd2895` for the reason (4.1 broke on the Synology DSM in use).
+The `pvc-grimmory-library` PV uses the same NFS mount options as the deployed calibre-web library PV (`nfsvers=4`, `hard`, `rsize=1048576`, `wsize=1048576`). Note `nfsvers=4` (not `4.0` or `4.1`) — the existing calibre-web PV uses this form, see commit `9fd2895` for the reason (4.1 broke on the Synology DSM in use).
 
-### DISK_TYPE=NETWORK
+### DISK_TYPE setting
 
-Grimmory exposes a `DISK_TYPE` env var that toggles between `LOCAL` (full UI control over files) and `NETWORK` (delete/move/rename disabled in the UI to avoid clobbering shared mounts). The library is NFS-backed, so we set `DISK_TYPE=NETWORK`. Tradeoff accepted: UI-driven library file management is reduced; BookDrop ingest, metadata edits, reading, sync, OPDS all still work. The user can manage files directly via SMB on the NAS if needed.
+Grimmory exposes a `DISK_TYPE` env var. Behaviour confirmed from `backend/src/main/java/org/booklore/service/file/FileMoveService.java` in the upstream repo: when `DISK_TYPE=NETWORK`, **any move operation throws** with the message "File move operations are only supported on local storage". BookDrop's import flow involves moving files from the bookdrop directory into the library tree — so `DISK_TYPE=NETWORK` would break BookDrop entirely.
+
+Decision: **`DISK_TYPE=LOCAL`**, even though the library is on NFS. The NETWORK mode's stated rationale ("avoid destructive changes on shared mounts") is a soft warning, not a correctness boundary — NFS is a perfectly valid filesystem for Grimmory's purposes, and the user has SMB access to the same share to recover from any accidental UI deletes. BookDrop ingest is a primary goal of this deployment; preserving it outweighs the soft safety rail.
 
 ### Identity / file ownership
 
@@ -124,24 +126,27 @@ No `decryption.provider: sops` — no SOPS files in this overlay.
 
 ### Grimmory Deployment
 
-**Image:** `ghcr.io/grimmory-tools/grimmory:<digest>` pinned at implementation time.
+**Image:** `ghcr.io/grimmory-tools/grimmory:v0.38.2` pinned at implementation time (confirm current stable from the repo's Releases page; v0.38.2 is the version shown in the official production compose as of 2026-06-03).
 
-**Container port:** 6060 (HTTP, Grimmory default).
+**Container port:** 6060 (HTTP, Grimmory default — confirmed from `deploy/helm/grimmory/values.yaml`).
 
-**Environment** (confirm names against Grimmory's official docker-compose at implementation time — names below match the docs as of 2026-06-03):
+**Environment** (names verified against `deploy/compose/docker-compose.yml` in `grimmory-tools/grimmory`):
 
 - `TZ=Europe/Rome`
-- `DISK_TYPE=NETWORK`
+- `USER_ID=1027`
+- `GROUP_ID=100`
+- `DISK_TYPE=LOCAL`
 - `DATABASE_URL=jdbc:mariadb://mariadb:3306/grimmory`
 - `DATABASE_USERNAME=grimmory`
 - `DATABASE_PASSWORD` from Secret `grimmory-db` key `password`
-- `BOOKS_PATH=/books` (default, set explicitly for clarity)
-- `BOOKDROP_PATH=/books/bookdrop` (a subdir of the library so SMB users can drop files there from the NAS side). **Verify at implementation time that BookDrop's automated file moves are not blocked by `DISK_TYPE=NETWORK`** — the NETWORK flag disables *UI-driven* file ops, but if it also disables BookDrop's internal move-after-import step, BookDrop is broken on NFS and we need an alternative (e.g., point `BOOKDROP_PATH` at a subpath of the local `/data` PVC instead, accepting that drops can't be made via SMB then).
+- `SWAGGER_ENABLED=false`
+- `FORCE_DISABLE_OIDC=false`
 
-**Volumes:**
+**Volumes (mount paths verified against upstream compose):**
 
-- `/data` → `pvc-grimmory-data` (openebs-rawfile, 2 GiB)
-- `/books` → `pvc-grimmory-library` (NFS, 2 GiB)
+- `/app/data` → `pvc-grimmory-data` (openebs-rawfile, 2 GiB) — Grimmory app state
+- `/books` → `pvc-grimmory-library` (NFS, 2 GiB) — library tree
+- `/bookdrop` → subPath of `pvc-grimmory-library` (NFS) — drop zone, lives on the same NFS share so SMB users can drop files. We mount it as a `subPath` (`bookdrop/`) of the library PVC rather than a separate volume, so DSM has one share to administer.
 
 **Resources:**
 
@@ -152,31 +157,48 @@ limits:   { cpu: 1000m, memory: 1536Mi }
 
 JVM floor is the reason for the higher requests vs calibre-web. The 1.5 GiB ceiling fits Grimmory's documented "10k+ books → 1-2 GiB" guidance.
 
-**Probes:** HTTP GET `/` on port 6060. Startup probe with `failureThreshold: 60` (Spring Boot cold-start on understairs hardware is slow). Confirm Grimmory exposes a `/actuator/health` endpoint at implementation time and use it if available; otherwise `/`.
+**Probes:** HTTP GET `/api/v1/healthcheck` on port 6060 (confirmed from the upstream Helm chart's default probe paths).
 
-**Strategy:** `Recreate` (RWO PVCs, single replica).
+```yaml
+startupProbe:
+  httpGet: { path: /api/v1/healthcheck, port: http }
+  failureThreshold: 30
+  periodSeconds: 10
+livenessProbe:
+  httpGet: { path: /api/v1/healthcheck, port: http }
+  periodSeconds: 30
+readinessProbe:
+  httpGet: { path: /api/v1/healthcheck, port: http }
+  periodSeconds: 10
+```
+
+Startup `failureThreshold: 30` (5 minutes at 10s period) for Spring Boot cold-start on understairs.
+
+**Strategy:** `Recreate` (RWO `/app/data` PVC, single replica).
 
 **SecurityContext:** `runAsUser: 1027`, `runAsGroup: 100`, `fsGroup: 100`.
 
-**initContainer (optional, decide at implementation time):** A `busybox` initContainer that waits for `mariadb:3306` to accept TCP, so Grimmory doesn't crashloop on first start while MariaDB is still initializing the data directory. Cheap insurance.
+**initContainer:** A `busybox` initContainer that waits for `mariadb:3306` to accept TCP, so Grimmory doesn't crashloop on first start while MariaDB is still initializing the data directory. Cheap insurance.
 
 ### MariaDB Deployment
 
-**Image:** `mariadb:11.4-noble@<digest>` pinned at implementation time.
+**Image:** `lscr.io/linuxserver/mariadb:11.4.8` pinned at implementation time (matches what Grimmory's own production compose recommends; the linuxserver image's PUID/PGID handling fits this setup).
 
 **Container port:** 3306.
 
-**Environment:**
+**Environment (linuxserver/mariadb image conventions):**
 
+- `PUID=1027`
+- `PGID=100`
+- `TZ=Europe/Rome`
 - `MYSQL_ROOT_PASSWORD` from Secret `grimmory-mariadb-root` key `password`
 - `MYSQL_DATABASE=grimmory`
 - `MYSQL_USER=grimmory`
 - `MYSQL_PASSWORD` from Secret `grimmory-db` key `password`
-- `MARIADB_AUTO_UPGRADE=1` (cleans up across minor version bumps)
 
 **Volume:**
 
-- `/var/lib/mysql` → `pvc-grimmory-mariadb` (openebs-rawfile, 2 GiB)
+- `/config` → `pvc-grimmory-mariadb` (openebs-rawfile, 2 GiB) — linuxserver image stores everything (datadir, config, logs) under `/config`
 
 **Resources:**
 
@@ -187,11 +209,15 @@ limits:   { cpu: 500m, memory: 512Mi }
 
 **Probes:**
 
-- `livenessProbe`: `exec` `mariadb-admin ping -uroot -p$MYSQL_ROOT_PASSWORD`
-- `readinessProbe`: same
-- `startupProbe`: same, `failureThreshold: 30` for first-run initdb
+- `livenessProbe`: `exec` `mariadb-admin ping -h localhost`
+- `readinessProbe`: `exec` `mariadb-admin ping -h localhost`
+- `startupProbe`: `exec` `mariadb-admin ping -h localhost`, `failureThreshold: 30` for first-run initdb
+
+(No `-p$MYSQL_ROOT_PASSWORD` needed — `mariadb-admin ping` returns success on connection refusal too without needing auth; the linuxserver image's own compose uses unauthenticated ping for its healthcheck.)
 
 **Strategy:** `Recreate`. Do not enable `RollingUpdate` — RWO PVC plus initdb sequencing makes that hazardous.
+
+**SecurityContext:** linuxserver image runs entrypoint as root and drops to PUID/PGID. Do NOT pin `runAsUser` on this pod.
 
 ### Service definitions
 
@@ -218,9 +244,8 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   mountOptions:
-    - nfsvers=4.0
+    - nfsvers=4
     - hard
-    - nconnect=4
     - rsize=1048576
     - wsize=1048576
   csi:
