@@ -4,3 +4,4 @@ resources:
   - namespace.yaml
   - services.yaml
   - mariadb.deployment.yaml
+  - grimmory.deployment.yaml
