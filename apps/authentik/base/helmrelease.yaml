@@ -18,6 +18,12 @@ spec:
         name: authentik
   # install:
   #   createNamespace: true
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
   driftDetection:
     mode: enabled
   valuesFrom:
