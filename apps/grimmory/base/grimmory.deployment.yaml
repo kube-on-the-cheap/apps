@@ -46,7 +46,7 @@ spec:
               memory: 32Mi
       containers:
         - name: grimmory
-          image: ghcr.io/grimmory-tools/grimmory:v0.38.2
+          image: docker.io/grimmory/grimmory:v3.1.0@sha256:e71577dfc1c8a403a42846786d9e14a10f99744c8e1de99d5451ba82af275286
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
