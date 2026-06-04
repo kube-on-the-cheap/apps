@@ -1,0 +1,31 @@
+---
+- greeting:
+    text_size: xl
+    text: "Understairs"
+
+- datetime:
+    text_size: l
+    locale: en-GB
+    format:
+      timeStyle: short
+      dateStyle: long
+
+- openmeteo:
+    label: Caravaggio
+    latitude: 45.499
+    longitude: 9.643
+    units: metric
+    cache: 15
+
+- kubernetes:
+    cluster:
+      show: true
+      cpu: true
+      memory: true
+      showLabel: true
+      label: understairs
+    nodes:
+      show: true
+      cpu: true
+      memory: true
+      showLabel: true
