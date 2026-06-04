@@ -1,0 +1,11 @@
+---
+- Infrastructure:
+    - Synology DSM:
+        - abbr: NAS
+          href: http://nas.homelab.blacksd.tech:50000
+    - Tailscale:
+        - abbr: TS
+          href: https://login.tailscale.com/admin
+    - Cloudflare:
+        - abbr: CF
+          href: https://dash.cloudflare.com
