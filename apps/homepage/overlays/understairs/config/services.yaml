@@ -1,0 +1,37 @@
+---
+- Media:
+    - Audiobookshelf:
+        href: https://audiobooks.homelab.blacksd.tech
+        description: Audiobook server
+        icon: audiobookshelf.svg
+        widget:
+          type: audiobookshelf
+          url: http://audiobookshelf.audiobookshelf.svc.cluster.local
+          key: "{{HOMEPAGE_VAR_AUDIOBOOKSHELF_KEY}}"
+    - Calibre-Web:
+        href: https://books.homelab.blacksd.tech
+        description: E-book library
+        icon: calibre-web.svg
+        widget:
+          type: calibreweb
+          url: http://calibre-web.calibre-web.svc.cluster.local
+          username: "{{HOMEPAGE_VAR_CALIBRE_WEB_USER}}"
+          password: "{{HOMEPAGE_VAR_CALIBRE_WEB_PASSWORD}}"
+
+- Tools:
+    - Paperless-ngx:
+        href: https://paperless.homelab.blacksd.tech
+        description: Document archive
+        icon: paperless-ngx.svg
+        widget:
+          type: paperlessngx
+          url: http://paperless-ngx.paperless-ngx.svc.cluster.local
+          key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
+    - Vaultwarden:
+        href: https://vault.homelab.blacksd.tech
+        description: Password manager
+        icon: vaultwarden.svg
+    - Minecraft Bedrock:
+        href: minecraft-bedrock.minecraft-bedrock.svc.cluster.local:19132
+        description: Bedrock server
+        icon: minecraft.svg
