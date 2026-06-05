@@ -33,3 +33,12 @@ resources:
   limits:
     cpu: "2"
     memory: 4Gi
+
+# Cold-start on understairs hardware with a non-trivial world takes
+# 1-2 minutes before the Bedrock RakNet socket accepts pings. The
+# chart's default liveness window (30s + 3*10s = 60s) kills the pod
+# mid-init, causing CrashLoopBackOff. Enable the chart's startupProbe
+# (10-minute budget by default) to gate liveness/readiness until the
+# server is actually up.
+startupProbe:
+  enabled: true
