@@ -11,6 +11,8 @@ https://vault.homelab.blacksd.tech/
 https://paperless.homelab.blacksd.tech/
 https://books.homelab.blacksd.tech/
 https://audiobooks.homelab.blacksd.tech/
+https://library.homelab.blacksd.tech/
+http(s)?://.*\.svc\.cluster\.local.*
 https://charts.bitwarden.com/
 https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/*
 https://artifacthub.io/packages/*

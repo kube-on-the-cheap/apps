@@ -8,15 +8,10 @@
           type: audiobookshelf
           url: http://audiobookshelf.audiobookshelf.svc.cluster.local
           key: "{{HOMEPAGE_VAR_AUDIOBOOKSHELF_KEY}}"
-    - Calibre-Web:
-        href: https://books.homelab.blacksd.tech
+    - Grimmory:
+        href: https://library.homelab.blacksd.tech
         description: E-book library
-        icon: calibre-web.svg
-        widget:
-          type: calibreweb
-          url: http://calibre-web.calibre-web.svc.cluster.local
-          username: "{{HOMEPAGE_VAR_CALIBRE_WEB_USER}}"
-          password: "{{HOMEPAGE_VAR_CALIBRE_WEB_PASSWORD}}"
+        icon: mdi-bookshelf
 
 - Tools:
     - Paperless-ngx:
