@@ -14,6 +14,10 @@
         icon: mdi-bookshelf
 
 - Tools:
+    - Linkwarden:
+        href: https://links.homelab.blacksd.tech
+        description: Bookmark manager
+        icon: linkwarden.svg
     - Paperless-ngx:
         href: https://paperless.homelab.blacksd.tech
         description: Document archive
