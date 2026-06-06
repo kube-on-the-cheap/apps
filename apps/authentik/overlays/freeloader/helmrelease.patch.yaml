@@ -54,7 +54,3 @@ spec:
             secretKeyRef:
               name: email-credentials
               key: password
-    redis:
-      master:
-        persistence:
-          enabled: false

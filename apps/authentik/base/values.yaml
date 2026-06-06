@@ -1,34 +1,8 @@
-global:
-  env:
-    - name: AUTHENTIK_SECRET_KEY
-      valueFrom:
-        secretKeyRef:
-          name: authentik-secret-key
-          key: secret-key
-    - name: AUTHENTIK_POSTGRESQL__HOST
-      value: authentik-pg-rw.authentik.svc.cluster.local
-    - name: AUTHENTIK_POSTGRESQL__NAME
-      value: authentikdb
-    - name: AUTHENTIK_POSTGRESQL__USER
-      valueFrom:
-        secretKeyRef:
-          name: authentik-pg-app
-          key: username
-    - name: AUTHENTIK_POSTGRESQL__PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: authentik-pg-app
-          key: password
-    - name: AUTHENTIK_EMAIL__USERNAME
-      valueFrom:
-        secretKeyRef:
-          name: email-credentials
-          key: username
-    - name: AUTHENTIK_EMAIL__PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: email-credentials
-          key: password
+# global.env is fully provided by each overlay's helmrelease.patch.yaml
+# (per-cluster Postgres + email secret wiring varies; AUTHENTIK_SECRET_KEY too).
+# Kustomize replaces YAML lists rather than merging, so any env var defined
+# here would be silently dropped by the overlay. Keep this block empty.
+global: {}
 
 server:
   ingress:
@@ -69,20 +43,6 @@ worker:
       cpu: 500m
       memory: 512Mi
       ephemeral-storage: 2Gi
-
-redis:
-  enabled: true
-  master:
-    persistence:
-      storageClass: local-path
-      size: 5Gi
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 200m
-        memory: 128Mi
 
 postgresql:
   enabled: false
