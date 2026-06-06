@@ -1,6 +1,8 @@
 file://*
 s3://*
 http://zitadel:8080/
+http://meilisearch:7700/
+http://chrome:9222/
 https://.*\.oraclecloud\.com/
 https://charts.zitadel.com/*
 https://github.com/zitadel/zitadel/issues/11163
