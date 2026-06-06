@@ -4,6 +4,8 @@ resources:
   - audiobookshelf.yaml
   - grimmory.yaml
   - homepage.yaml
+  - karakeep.yaml
   - minecraft-bedrock.yaml
   - paperless-ngx.yaml
+  - readeck.yaml
   - vaultwarden.yaml
