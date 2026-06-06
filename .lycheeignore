@@ -1,6 +1,8 @@
 file://*
 s3://*
 http://zitadel:8080/
+http://meilisearch:7700/
+http://chrome:9222/
 https://.*\.oraclecloud\.com/
 https://charts.zitadel.com/*
 https://github.com/zitadel/zitadel/issues/11163
@@ -12,6 +14,8 @@ https://paperless.homelab.blacksd.tech/
 https://books.homelab.blacksd.tech/
 https://audiobooks.homelab.blacksd.tech/
 https://library.homelab.blacksd.tech/
+https://bookmarks.homelab.blacksd.tech/
+https://reader.homelab.blacksd.tech/
 http(s)?://.*\.svc\.cluster\.local.*
 https://charts.bitwarden.com/
 https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/*
