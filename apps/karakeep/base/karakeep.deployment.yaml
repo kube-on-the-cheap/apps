@@ -60,12 +60,18 @@ spec:
               value: "http://chrome:9222"
             - name: DISABLE_SIGNUPS
               value: "false"
+            - name: CRAWLER_SCREENSHOT_TIMEOUT_SEC
+              value: "30"
+            - name: CRAWLER_NAVIGATE_TIMEOUT_SEC
+              value: "60"
+            - name: CRAWLER_JOB_TIMEOUT_SEC
+              value: "120"
             - name: NEXTAUTH_SECRET
               valueFrom:
                 secretKeyRef:
                   name: karakeep-nextauth-secret
                   key: password
-            - name: MEILISEARCH_MASTER_KEY
+            - name: MEILI_MASTER_KEY
               valueFrom:
                 secretKeyRef:
                   name: karakeep-meili-master-key
