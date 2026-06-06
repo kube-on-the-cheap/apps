@@ -13,9 +13,9 @@ spec:
   ingressClassName: tailscale
   tls:
     - hosts:
-        - auth
+        - login
   rules:
-    - host: auth
+    - host: login
       http:
         paths:
           - path: /
