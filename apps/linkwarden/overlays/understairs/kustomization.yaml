@@ -6,3 +6,4 @@ resources:
   - cluster.cnpg.yaml
   - nextauth-secret.externalsecret.yaml
   - httproute.yaml
+  - backendtrafficpolicy.yaml

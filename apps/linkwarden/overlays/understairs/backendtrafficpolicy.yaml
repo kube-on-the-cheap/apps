@@ -1,0 +1,15 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: linkwarden-timeouts
+  namespace: linkwarden
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: linkwarden
+  timeout:
+    http:
+      requestTimeout: 60s
+      connectionIdleTimeout: 5m
