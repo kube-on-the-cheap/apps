@@ -14,6 +14,10 @@
         icon: mdi-bookshelf
 
 - Tools:
+    - Karakeep:
+        href: https://bookmarks.homelab.blacksd.tech
+        description: Bookmark manager
+        icon: karakeep.svg
     - Paperless-ngx:
         href: https://paperless.homelab.blacksd.tech
         description: Document archive
@@ -22,6 +26,10 @@
           type: paperlessngx
           url: http://paperless-ngx.paperless-ngx.svc.cluster.local
           key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
+    - Readeck:
+        href: https://reader.homelab.blacksd.tech
+        description: Read-later
+        icon: readeck.svg
     - Vaultwarden:
         href: https://vault.homelab.blacksd.tech
         description: Password manager
