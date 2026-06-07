@@ -44,6 +44,19 @@ spec:
             secretKeyRef:
               name: authentik-postgres
               key: sslmode
+        # Neon serverless tuning: the Postgres is fronted by Neon's pgbouncer
+        # in transaction mode, and the compute scales to zero when idle.
+        # Persistent connections (CONN_MAX_AGE > 0) and the cursor disable are
+        # both required by Neon's pooler; without them every Authentik request
+        # does a fresh TCP handshake against the pooler and burns DB compute
+        # minutes. The CONN_MAX_AGE spinning bug from PR #22679 was fixed in
+        # 2026.5.2 (cherry-pick 518683f), so persistent conns are safe here.
+        - name: AUTHENTIK_POSTGRESQL__CONN_MAX_AGE
+          value: "300"
+        - name: AUTHENTIK_POSTGRESQL__CONN_HEALTH_CHECKS
+          value: "true"
+        - name: AUTHENTIK_POSTGRESQL__DISABLE_SERVER_SIDE_CURSORS
+          value: "true"
         - name: AUTHENTIK_EMAIL__USERNAME
           valueFrom:
             secretKeyRef:
