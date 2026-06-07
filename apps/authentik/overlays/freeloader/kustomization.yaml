@@ -4,7 +4,7 @@ resources:
   - ../../base
   - secret-key.externalsecret.yaml
   - email-credentials.externalsecret.yaml
-  - postgres.sops.yaml
+  - cluster.cnpg.yaml
   - httproute.yaml
   - tailscale-ingress.yaml
 patches:
