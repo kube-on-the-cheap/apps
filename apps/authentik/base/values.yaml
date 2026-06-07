@@ -47,8 +47,12 @@ worker:
 postgresql:
   enabled: false
 
-email:
-  host: smtp.email.eu-frankfurt-1.oci.oraclecloud.com
-  port: 587
-  use_tls: true
-  from: do-not-reply@mail.cloud.blacksd.tech
+# SMTP transport settings — username/password come in via global.env from
+# each overlay's helmrelease.patch.yaml (ExternalSecret-backed). The chart
+# expects these under authentik.email, not at the top level.
+authentik:
+  email:
+    host: smtp.email.eu-frankfurt-1.oci.oraclecloud.com
+    port: 587
+    use_tls: true
+    from: do-not-reply@mail.cloud.blacksd.tech
