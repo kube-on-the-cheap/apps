@@ -25,6 +25,18 @@ creation_rules:
         age:
           - *freeloader
           - *Marco_age_backup
+  - path_regex: ^configs/.*\.sops\.yaml$
+    key_groups:
+      - pgp:
+          - *Marco_pgp
+        age:
+          - *Marco_age_backup
+  - path_regex: ^configs/.*\.sops\.json$
+    key_groups:
+      - pgp:
+          - *Marco_pgp
+        age:
+          - *Marco_age_backup
 stores:
   yaml:
     indent: 2
