@@ -9,8 +9,9 @@
 # env vars to govern the Control Plane access
 .envrc
 
-# Implementation plans are throwaway execution artifacts; specs are kept
+# Superpowers plans and specs are local-only artifacts
 docs/superpowers/plans/
+docs/superpowers/specs/
 
 # Terragrunt
 **/.terragrunt-cache
