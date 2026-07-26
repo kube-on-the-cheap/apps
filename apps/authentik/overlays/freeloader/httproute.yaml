@@ -12,6 +12,11 @@ spec:
       sectionName: https
   hostnames:
     - login.cloud.blacksd.tech
+    # Alias for the deprecated Zitadel hostname. Kept so bookmarks,
+    # hardcoded configs, and app OIDC clients that still point at
+    # auth.cloud.blacksd.tech resolve to Authentik. Safe to remove
+    # once every consumer has been migrated to the login.* hostname.
+    - auth.cloud.blacksd.tech
   rules:
     - matches:
         - path:
@@ -52,6 +57,11 @@ spec:
       sectionName: https
   hostnames:
     - login.cloud.blacksd.tech
+    # Alias for the deprecated Zitadel hostname. Kept so bookmarks,
+    # hardcoded configs, and app OIDC clients that still point at
+    # auth.cloud.blacksd.tech resolve to Authentik. Safe to remove
+    # once every consumer has been migrated to the login.* hostname.
+    - auth.cloud.blacksd.tech
   rules:
     - matches:
         - path:
