@@ -23,7 +23,7 @@ locals {
 }
 
 inputs = {
-  authentik_url        = "https://login.cloud.blacksd.tech"
+  authentik_url        = "https://auth.cloud.blacksd.tech"
   authentik_token      = local.authentik_token
   google_client_id     = local.google_oauth.client_id
   google_client_secret = local.google_oauth.client_secret

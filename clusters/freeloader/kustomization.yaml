@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - authentik.yaml
-  # Zitadel: deprecated 2026-07-26 in favor of Authentik (login.cloud.blacksd.tech).
+  # Zitadel: deprecated 2026-07-26 in favor of Authentik (auth.cloud.blacksd.tech).
   # Manifests under apps/zitadel/ and clusters/freeloader/zitadel.yaml are kept in
   # git as a fallback. Uncomment the line below to reactivate — Flux will
   # recreate the namespace, CNPG cluster (from Barman/S3 backups), and HTTPRoute.

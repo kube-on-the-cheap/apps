@@ -64,7 +64,7 @@ data "authentik_group" "builtin_admins" {
 # this file was written; if the value ever drifts, run:
 #
 #   curl -H "Authorization: Bearer $TOKEN" \
-#     https://login.cloud.blacksd.tech/api/v3/core/users/?search=akadmin \
+#     https://auth.cloud.blacksd.tech/api/v3/core/users/?search=akadmin \
 #     | jq '.results[0].pk'
 #
 # and update the id below. The import block is idempotent — leaving it

@@ -1,7 +1,7 @@
 # authentik
 
 Terraform module for managing the self-hosted Authentik instance at
-`login.cloud.blacksd.tech` (deployed on the freeloader cluster). Mirrors
+`auth.cloud.blacksd.tech` (deployed on the freeloader cluster). Mirrors
 `modules/zitadel/` — same users, same four group buckets, same Google
 IdP, plus a parallel Grimmory OIDC client.
 
@@ -24,7 +24,7 @@ adding the property mapping is a follow-up spec.
 ## One-time bootstrap
 
 1. Log into the Authentik admin UI at
-   `https://login.cloud.blacksd.tech/if/admin/` from a permitted source
+   `https://auth.cloud.blacksd.tech/if/admin/` from a permitted source
    IP (admin route gated by the existing `authentik-admin-ip-filter`
    SecurityPolicy).
 2. Create an Internal Service Account user named `terraform`, add it
@@ -40,7 +40,7 @@ adding the property mapping is a follow-up spec.
    (`path_regex: \.sops(?:\.(?:yaml|json))?$`) matches the new paths
    automatically.
 5. In the Google Cloud Console, add
-   `https://login.cloud.blacksd.tech/source/oauth/callback/google/`
+   `https://auth.cloud.blacksd.tech/source/oauth/callback/google/`
    to the OAuth client's authorized redirect URIs (alongside the
    existing Zitadel callback).
 
@@ -119,7 +119,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_admins"></a> [admins](#input\_admins) | Usernames who get added to the 'admins' Authentik group. Each must be a key in `users`. Provided by Terragrunt via SOPS decrypt of users.sops.yaml (`groups.admins`). | `list(string)` | `[]` | no |
 | <a name="input_authentik_token"></a> [authentik\_token](#input\_authentik\_token) | API token for the Terraform-owned admin user. Provided by Terragrunt via SOPS decrypt of authentik-token.sops.yaml. | `string` | n/a | yes |
-| <a name="input_authentik_url"></a> [authentik\_url](#input\_authentik\_url) | Base URL of the Authentik instance. | `string` | `"https://login.cloud.blacksd.tech"` | no |
+| <a name="input_authentik_url"></a> [authentik\_url](#input\_authentik\_url) | Base URL of the Authentik instance. | `string` | `"https://auth.cloud.blacksd.tech"` | no |
 | <a name="input_family"></a> [family](#input\_family) | Usernames who get added to the 'family' Authentik group (kids ∪ grownups — the household-wide catch-all used for shared apps like the library). Each must be a key in `users`. Provided by Terragrunt via SOPS decrypt of users.sops.yaml (`groups.family`). | `list(string)` | `[]` | no |
 | <a name="input_google_client_id"></a> [google\_client\_id](#input\_google\_client\_id) | Client ID of the Google OAuth client used for the Google source. Provided by Terragrunt via SOPS decrypt of google-oauth.sops.yaml. | `string` | n/a | yes |
 | <a name="input_google_client_secret"></a> [google\_client\_secret](#input\_google\_client\_secret) | Client secret of the Google OAuth client used for the Google source. Provided by Terragrunt via SOPS decrypt of google-oauth.sops.yaml. | `string` | n/a | yes |

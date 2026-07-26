@@ -1,7 +1,7 @@
 variable "authentik_url" {
   description = "Base URL of the Authentik instance."
   type        = string
-  default     = "https://login.cloud.blacksd.tech"
+  default     = "https://auth.cloud.blacksd.tech"
 }
 
 variable "authentik_token" {
