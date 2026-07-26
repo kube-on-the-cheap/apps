@@ -11,3 +11,17 @@
 
 # Implementation plans are throwaway execution artifacts; specs are kept
 docs/superpowers/plans/
+
+# Terragrunt
+**/.terragrunt-cache
+# Terraform
+**/.terraform
+**/*.tfstate
+**/*.tfstate.backup
+**/*.tfstate.*.backup
+**/*.tfplan
+**/*.tfvars
+**/*.tfvars.json
+**/*.auto.tfvars
+# Terraform locks are useful only in root modules
+configs/**/.terraform.lock.hcl
