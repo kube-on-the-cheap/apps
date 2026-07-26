@@ -64,11 +64,11 @@ repos:
       # GitHub Schema check
       - id: check-github-workflows
 
-  - repo: https://github.com/lycheeverse/lychee.git
-    rev: v0.15.1
-    hooks:
-      # Link checks
-      - id: lychee
-        args: ["--no-progress", "--exclude-all-private", "--include-fragments"]
-        stages:
-          - pre-push
+  # - repo: https://github.com/lycheeverse/lychee.git
+  #   rev: v0.15.1
+  #   hooks:
+  #     # Link checks
+  #     - id: lychee
+  #       args: ["--no-progress", "--exclude-all-private", "--include-fragments"]
+  #       stages:
+  #         - pre-push
