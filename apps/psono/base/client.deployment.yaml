@@ -1,0 +1,73 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psono-client
+  namespace: psono
+  labels:
+    app.kubernetes.io/name: psono
+    app.kubernetes.io/component: client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: psono
+      app.kubernetes.io/component: client
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: psono
+        app.kubernetes.io/component: client
+    spec:
+      containers:
+        - name: client
+          image: docker.io/psono/psono-client:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          volumeMounts:
+            # The client image ships a default config.json at this path;
+            # mounting a ConfigMap-backed file with subPath replaces
+            # just that one file without shadowing sibling assets.
+            - name: config
+              mountPath: /usr/share/nginx/html/config.json
+              subPath: config.json
+              readOnly: true
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            periodSeconds: 30
+      volumes:
+        - name: config
+          configMap:
+            name: psono-client-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: psono-client
+  namespace: psono
+spec:
+  selector:
+    app.kubernetes.io/name: psono
+    app.kubernetes.io/component: client
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

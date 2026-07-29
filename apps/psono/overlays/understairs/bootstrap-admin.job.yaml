@@ -1,0 +1,113 @@
+---
+# ONE-SHOT bootstrap: seed the first Psono admin user.
+#
+# NOT included in kustomization.yaml on purpose — Flux must never
+# reconcile this. Two commands run back-to-back:
+#   1. `createuser <username> <password> <email>` — creates the user.
+#   2. `promoteuser <username_or_email> superuser` — grants access to
+#      the admin portal at /portal.
+#
+# Recipe (run against understairs, from the repo root):
+#
+#   1. Edit the three env vars below (PSONO_ADMIN_USERNAME, EMAIL,
+#      PASSWORD). Pick a strong password — it becomes the master
+#      password for the admin account and drives the vault crypto.
+#      Store it in your existing password vault BEFORE running.
+#   2. Apply:
+#        kubectl --context understairs.bat-corn.ts.net \
+#          create -f apps/psono/overlays/understairs/bootstrap-admin.job.yaml
+#   3. Watch:
+#        kubectl --context understairs.bat-corn.ts.net -n psono \
+#          logs -f job/psono-bootstrap-admin
+#   4. Once Complete, revert the three env values back to placeholders
+#      (do NOT commit real credentials) and delete the Job:
+#        kubectl --context understairs.bat-corn.ts.net -n psono \
+#          delete job psono-bootstrap-admin
+#
+# Re-running is safe if the earlier attempt failed before createuser
+# returned; if the user already exists, createuser errors and the Job
+# will not retry (backoffLimit=0). Delete the Job and re-run.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: psono-bootstrap-admin
+  namespace: psono
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: bootstrap
+          image: docker.io/psono/psono-server-enterprise:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              python3 ./psono/manage.py createuser \
+                "$PSONO_ADMIN_USERNAME" \
+                "$PSONO_ADMIN_PASSWORD" \
+                "$PSONO_ADMIN_EMAIL"
+              python3 ./psono/manage.py promoteuser \
+                "$PSONO_ADMIN_EMAIL" \
+                superuser
+          env:
+            # REPLACE ME before applying. Do NOT commit real values.
+            - name: PSONO_ADMIN_USERNAME
+              value: "REPLACE_ME_admin_username"
+            - name: PSONO_ADMIN_EMAIL
+              value: "REPLACE_ME_admin_email"
+            - name: PSONO_ADMIN_PASSWORD
+              value: "REPLACE_ME_admin_password"
+            # Same env block as the server Deployment — Django needs
+            # the DB URL and crypto keys imported for createuser and
+            # promoteuser to work.
+            - name: PSONO_DEBUG
+              value: "False"
+            - name: PSONO_ALLOWED_HOSTS
+              value: '["*"]'
+            - name: PSONO_ALLOWED_DOMAINS
+              value: '["*"]'
+            - name: PSONO_HOST_URL
+              value: "https://pass.homelab.blacksd.tech/server"
+            - name: PSONO_WEB_CLIENT_URL
+              value: "https://pass.homelab.blacksd.tech"
+            - name: PSONO_MANAGEMENT_ENABLED
+              value: "True"
+            - name: PSONO_AUTHENTICATION_METHODS
+              value: '["AUTHKEY"]'
+            - name: PSONO_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: psono-pg-app
+                  key: uri
+            - name: PSONO_SECRET_KEY_FILE
+              value: /etc/psono/SECRET_KEY
+            - name: PSONO_ACTIVATION_LINK_SECRET_FILE
+              value: /etc/psono/ACTIVATION_LINK_SECRET
+            - name: PSONO_DB_SECRET_FILE
+              value: /etc/psono/DB_SECRET
+            - name: PSONO_EMAIL_SECRET_SALT_FILE
+              value: /etc/psono/EMAIL_SECRET_SALT
+            - name: PSONO_PRIVATE_KEY_FILE
+              value: /etc/psono/PRIVATE_KEY
+            - name: PSONO_PUBLIC_KEY_FILE
+              value: /etc/psono/PUBLIC_KEY
+          volumeMounts:
+            - name: server-keys
+              mountPath: /etc/psono
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      volumes:
+        - name: server-keys
+          secret:
+            secretName: psono-server-keys
+            defaultMode: 0400

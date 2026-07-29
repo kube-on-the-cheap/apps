@@ -1,0 +1,14 @@
+{
+  "backend_servers": [
+    {
+      "title": "Psono",
+      "url": "https://pass.homelab.blacksd.tech/server"
+    }
+  ],
+  "base_url": "https://pass.homelab.blacksd.tech/",
+  "allow_custom_server": false,
+  "allow_registration": false,
+  "allow_lost_password": true,
+  "disable_download_bar": true,
+  "authentication_methods": ["AUTHKEY"]
+}

@@ -7,5 +7,6 @@ resources:
   - karakeep.yaml
   - minecraft-bedrock.yaml
   - paperless-ngx.yaml
+  - psono.yaml
   - readeck.yaml
   - vaultwarden.yaml

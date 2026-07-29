@@ -1,0 +1,99 @@
+---
+# Admin portal — IP-gated. Longest-path-prefix wins in Gateway API v1
+# routing, so this rule takes precedence over the catch-all /
+# below for anything under /portal.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: psono-admin
+  namespace: psono
+spec:
+  parentRefs:
+    - name: external
+      namespace: envoy-gateway-system
+  hostnames:
+    - pass.homelab.blacksd.tech
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /portal
+      backendRefs:
+        - name: psono-admin-client
+          port: 80
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: psono-admin-ip-filter
+  namespace: psono
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: psono-admin
+  authorization:
+    defaultAction: Deny
+    rules:
+      - action: Allow
+        principal:
+          # LAN + Tailscale — same allow-list Vaultwarden uses for its
+          # own /admin gate. Tighten to specific admin hosts if the
+          # user base grows.
+          clientCIDRs:
+            - 192.168.20.0/24
+            - 100.64.0.0/10
+---
+# Server API — routed to the Django server, no IP gate. The Bitwarden
+# client and browser extensions all hit /server/* for the JSON API.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: psono-server
+  namespace: psono
+spec:
+  parentRefs:
+    - name: external
+      namespace: envoy-gateway-system
+  hostnames:
+    - pass.homelab.blacksd.tech
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /server
+      # The Django app expects requests without the /server prefix
+      # (HOST_URL just tells clients where to find it). Strip it here
+      # rather than teaching Django about a URL prefix.
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: psono-server
+          port: 80
+---
+# Webclient — everything else. Longest-prefix routing means /portal
+# and /server hit their specific routes above; only unclaimed paths
+# fall through to /.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: psono-client
+  namespace: psono
+spec:
+  parentRefs:
+    - name: external
+      namespace: envoy-gateway-system
+  hostnames:
+    - pass.homelab.blacksd.tech
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: psono-client
+          port: 80

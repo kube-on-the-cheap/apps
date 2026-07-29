@@ -1,0 +1,158 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: psono-server
+  namespace: psono
+  labels:
+    app.kubernetes.io/name: psono
+    app.kubernetes.io/component: server
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: psono
+      app.kubernetes.io/component: server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: psono
+        app.kubernetes.io/component: server
+    spec:
+      # Django migrations against CNPG. Idempotent — safe to run every
+      # pod start. Uses the same env block as the main container so it
+      # sees PSONO_DATABASE_URL and the crypto _FILE mounts (settings.py
+      # imports fail without the six keys, even for `manage.py migrate`).
+      initContainers:
+        - name: migrate
+          image: docker.io/psono/psono-server-enterprise:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - python3
+            - ./psono/manage.py
+            - migrate
+            - --noinput
+          env: &psonoEnv
+            - name: PSONO_DEBUG
+              value: "False"
+            - name: PSONO_ALLOWED_HOSTS
+              value: '["*"]'
+            - name: PSONO_ALLOWED_DOMAINS
+              value: '["*"]'
+            - name: PSONO_HOST_URL
+              value: "http://localhost/server"
+            - name: PSONO_WEB_CLIENT_URL
+              value: "http://localhost"
+            - name: PSONO_NUM_PROXIES
+              value: "2"
+            - name: PSONO_MANAGEMENT_ENABLED
+              value: "True"
+            - name: PSONO_AUTHENTICATION_METHODS
+              value: '["AUTHKEY"]'
+            - name: PSONO_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: psono-pg-app
+                  key: uri
+            - name: PSONO_EMAIL_FROM
+              value: "do-not-reply@mail.cloud.blacksd.tech"
+            - name: PSONO_EMAIL_HOST
+              value: "smtp.email.eu-frankfurt-1.oci.oraclecloud.com"
+            - name: PSONO_EMAIL_PORT
+              value: "587"
+            - name: PSONO_EMAIL_USE_TLS
+              value: "True"
+            - name: PSONO_EMAIL_HOST_USER
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-creds
+                  key: username
+            - name: PSONO_EMAIL_HOST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-creds
+                  key: password
+            # Sensitive scalars sourced from mounted files rather than
+            # env values — keeps them out of `kubectl describe pod` and
+            # any downstream log/env dump. Psono's config_get() reads
+            # PSONO_<KEY>_FILE for whitelisted keys.
+            - name: PSONO_SECRET_KEY_FILE
+              value: /etc/psono/SECRET_KEY
+            - name: PSONO_ACTIVATION_LINK_SECRET_FILE
+              value: /etc/psono/ACTIVATION_LINK_SECRET
+            - name: PSONO_DB_SECRET_FILE
+              value: /etc/psono/DB_SECRET
+            - name: PSONO_EMAIL_SECRET_SALT_FILE
+              value: /etc/psono/EMAIL_SECRET_SALT
+            - name: PSONO_PRIVATE_KEY_FILE
+              value: /etc/psono/PRIVATE_KEY
+            - name: PSONO_PUBLIC_KEY_FILE
+              value: /etc/psono/PUBLIC_KEY
+          volumeMounts: &psonoMounts
+            - name: server-keys
+              mountPath: /etc/psono
+              readOnly: true
+      containers:
+        - name: server
+          image: docker.io/psono/psono-server-enterprise:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env: *psonoEnv
+          volumeMounts: *psonoMounts
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+          startupProbe:
+            httpGet:
+              path: /info/
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 30
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /info/
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /info/
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+      volumes:
+        # Each stringData key in psono-server-keys becomes a file under
+        # /etc/psono/<KEY>. defaultMode 0400 = read-only for the pod
+        # user only.
+        - name: server-keys
+          secret:
+            secretName: psono-server-keys
+            defaultMode: 0400
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: psono-server
+  namespace: psono
+spec:
+  selector:
+    app.kubernetes.io/name: psono
+    app.kubernetes.io/component: server
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

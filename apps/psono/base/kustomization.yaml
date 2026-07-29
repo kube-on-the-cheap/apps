@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - server.deployment.yaml
+  - client.deployment.yaml
+  - admin-client.deployment.yaml
+  - cleartoken.cronjob.yaml
+# Both the regular client and the admin client mount the same
+# config.json — one ConfigMap, two mount paths. The overlay may patch
+# the file's contents to change backend URLs per cluster.
+configMapGenerator:
+  - name: psono-client-config
+    namespace: psono
+    files:
+      - config.json=client-config.json

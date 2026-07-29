@@ -1,0 +1,71 @@
+---
+# Daily cleanup of expired auth tokens from Postgres. The Psono docs
+# specifically call this out as a required cron; the server has no
+# self-scheduled cleanup path.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: psono-cleartoken
+  namespace: psono
+spec:
+  # 02:30 UTC — matches the docs' suggestion and stays clear of
+  # backup/snapshot windows on the cluster.
+  schedule: "30 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: cleartoken
+              image: docker.io/psono/psono-server-enterprise:latest
+              imagePullPolicy: IfNotPresent
+              command:
+                - python3
+                - ./psono/manage.py
+                - cleartoken
+              env:
+                - name: PSONO_DEBUG
+                  value: "False"
+                - name: PSONO_ALLOWED_HOSTS
+                  value: '["*"]'
+                - name: PSONO_DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: psono-pg-app
+                      key: uri
+                # settings.py fails to import without the six crypto
+                # scalars, even for a bare `cleartoken` invocation.
+                # Same _FILE pattern as the main Deployment.
+                - name: PSONO_SECRET_KEY_FILE
+                  value: /etc/psono/SECRET_KEY
+                - name: PSONO_ACTIVATION_LINK_SECRET_FILE
+                  value: /etc/psono/ACTIVATION_LINK_SECRET
+                - name: PSONO_DB_SECRET_FILE
+                  value: /etc/psono/DB_SECRET
+                - name: PSONO_EMAIL_SECRET_SALT_FILE
+                  value: /etc/psono/EMAIL_SECRET_SALT
+                - name: PSONO_PRIVATE_KEY_FILE
+                  value: /etc/psono/PRIVATE_KEY
+                - name: PSONO_PUBLIC_KEY_FILE
+                  value: /etc/psono/PUBLIC_KEY
+              volumeMounts:
+                - name: server-keys
+                  mountPath: /etc/psono
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+          volumes:
+            - name: server-keys
+              secret:
+                secretName: psono-server-keys
+                defaultMode: 0400
