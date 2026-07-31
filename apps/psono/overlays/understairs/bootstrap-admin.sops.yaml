@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: psono-bootstrap-admin
+  namespace: psono
+type: Opaque
+# Consumed by bootstrap-admin.job.yaml via envFrom. The Job itself is
+# excluded from the kustomization; this Secret IS included, so it gets
+# reconciled into the cluster by Flux and sits idle until the Job
+# references it. Deleting the Secret is safe after successful
+# bootstrap — the Flux reconcile will recreate it on the next
+# interval. If you want the credential fully purged from the cluster,
+# also remove this file from kustomization.yaml.
+#
+# Username MUST be the fully-qualified `<user>@<domain>` form matching
+# `backend_servers[0].domain` in client-config.json — otherwise the
+# webclient's authkey derivation won't match what createuser stored.
+stringData:
+  PSONO_ADMIN_USERNAME: ENC[AES256_GCM,data:YHy9MR6gshPBBYE1/zTy/gjXeB3+4Vwezw8A26bhsQ==,iv:Ldb6VcHCLftCRQg31eyqAS6468ZV6OIucM90TWiJQMk=,tag:E8zzCqwWzIPdQaItMKMdsA==,type:str]
+  PSONO_ADMIN_EMAIL: ENC[AES256_GCM,data:4LM6G0d/fbjEXcnU9yonKo+HJsQIDzvWYQ==,iv:U5K+6V+QN2d2OA+q1THGQ0OiueE5xBB77Q+Goi2mAQc=,tag:3o5tjVoEPv8xqJ9sFye8SQ==,type:str]
+  PSONO_ADMIN_PASSWORD: ENC[AES256_GCM,data:3yS6CKUb11TfFxh+MAdQFeH15iTb,iv:dlrssmbQrBEcGBgLWqdBp7N7jGT98QslLinJQfxybUk=,tag:7USYv5hcYVcuCxBZTGyX8Q==,type:str]
+sops:
+  age:
+    - enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBwQndlWGxrak8rTTBYZGhO
+        WUE3TGpFMTgzRnNZQnZIUDlXbXJqZUo2YUJrCkt0MmlvR3FDSVJySWlRSC9LU2th
+        U3pMa0NyTnluZmRTK1l1RTFGYTJtTWsKLS0tIDFoOVp4QVorQWlKVWcvMkF5VUVh
+        UzVKS3ZCeXpUc3RqOTlyYnVjYzhydG8KQNZt8AT486lV8QAluUGj9QgEzbTHvgva
+        6q3jRZCRAxR3m+q79YCVbj8c2yswkknHLWA9Pj+JxaguM4y6lAOy6A==
+        -----END AGE ENCRYPTED FILE-----
+      recipient: age1rqldalz0wppytnn5qzkms98awx43u2kkea878wslktyu6sjrq35sfzktv4
+    - enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBhRHU3cDgzSUlQRWVGd0d5
+        N3MxdDV3YmJnMDlIY0pWSUMwQXhpR2l1RGdnClVXMU5CMzVrT3RKUXpsbkFGSnp1
+        M0R3cUx5dlVBeXZ4T3pvc2tCQWI0RW8KLS0tIDhuWDZpdVJoYk4xZHRHK21JV2R3
+        NmpBWXNaRmJsdDhzSDdLN3dzWTlqRzgKNcjPzY+Bv/Uc6dz5z/cKEZZ18akss82y
+        mMlqP08KkrzP8VmqgI1FeyfkvozjDYZlL49oxpXGvQWUgFJVgHlq9g==
+        -----END AGE ENCRYPTED FILE-----
+      recipient: age1k9pgstv92fnq4mpupu2msd9j7zvv96l07ueqfckrv3nwq94t7vzq7typqx
+  encrypted_regex: ^(data|stringData)$
+  lastmodified: "2026-07-31T20:46:43Z"
+  mac: ENC[AES256_GCM,data:z8aXKRrP5hZGSpimOEnSFd+XXODxH9rpphnPfkyS7I3tzU5qpU+IV0NSVM2/TI8Tpnlg2UGWt7Htm5DOl6sCTkW+6D8g1+tx3Jz7JcVp49xn0Xhz+FoGWx+eNaQmBfijaU+7rnawUbJwXXXuxrLjtnKJ9CRsNvbyiS6sLQ4s/6w=,iv:VnArrxZXXF/L1ACwAfOrw4xoCsLUILBPYVgb7oS3SDo=,tag:FbauJ7YxFq6Y1U629fMFwQ==,type:str]
+  mac_only_encrypted: true
+  pgp:
+    - created_at: "2026-07-31T20:46:43Z"
+      enc: |-
+        -----BEGIN PGP MESSAGE-----
+
+        hQIMA7McDQbiwetaAQ/+MdN33NfEYJbaczYqKcUA+EfgZtmtJPKLplbkL8t4U9gk
+        YtZZQpIH4bXm6D86aVlbgYjs296zqcYt431pVsaoAIG/rV7avHzhLbTSdeGzpywx
+        F/5Tyb9VyHPzA/rojVepuWeRzDlD9NwhJNiM6diIy8CeSjQJkDFtJhBrRMQt3MEi
+        YArDv3/F3Wuy8KPS6fVHLHdKr8HGYBGVrgwa7gnOw4KZudHAo7jHiN5H1Z0nMumR
+        2OYyc3Z7e+1ZzvBXBDMxhE3o+Y9CCXQaQeagwUXBzHoMGyRkAyMY7qDpHbbhszKl
+        RSNebyAV0HcaXiuHXJlw9tfgXnAAaJL3ymvlVeWKAlBg1ITO/AeGv3kO0zYD/EG1
+        klv0c94Z2s1zT8VHHVmfF+Q9eRkxLSyAfYatJXposEuE54KkqoENL/RoYP5bzPHw
+        MM75hSe1mWfr2ZeWXGCY0cq4wqAD4Jq1OXzSDN1FHuShSP7wK8Bdv8y2NY8HoSbI
+        UYq9fOgf694tTHgJF0fS585XKkWMkuWTn7/7qIYMKI5VlG6ETG6wBzdO7KM2t8cr
+        UiI2T8ktGy30YdjPq2iwai1c078V4RfE8K8v50Dvcq7IxFUFVHuF9sGMkSbzGDVT
+        vSKcugGIrbDerjY8OmnRSKxl9IB5wiCcv9ZNaXUSlMru1eC1G76w7J5YlqEowgbS
+        XgEaogFRk3rlwsvNiKPVgrX2CvXPk1c7Ij3R1f0turz0jpU8HRuS1MvtRu2wZ2wY
+        /7fxn0VnvtkY+iT6D80yuCf7Sw7FAirE5NS1kMgysprDPcCZZcr9jaWcjcSnUWA=
+        =VPu2
+        -----END PGP MESSAGE-----
+      fp: B31C0D06E2C1EB5A
+  version: 3.13.1

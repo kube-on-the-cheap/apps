@@ -5,10 +5,14 @@ resources:
   - cluster.cnpg.yaml
   - smtp-creds.externalsecret.yaml
   - server-keys.sops.yaml
+  - bootstrap-admin.sops.yaml
   - httproute.yaml
   # bootstrap-admin.job.yaml is intentionally NOT listed here — it is
-  # a one-shot Job applied manually with `kubectl create -f`. See the
-  # header comment in that file.
+  # a one-shot Job applied manually with `kubectl create -f`. The
+  # Secret it consumes (bootstrap-admin.sops.yaml) IS listed so Flux
+  # keeps the credential material in the cluster; delete both the Job
+  # and that Secret after successful bootstrap if you want the
+  # credential fully purged.
 patches:
   - path: server.deployment.patch.yaml
     target:
