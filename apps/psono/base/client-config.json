@@ -2,7 +2,8 @@
   "backend_servers": [
     {
       "title": "Psono",
-      "url": "https://pass.homelab.blacksd.tech/server"
+      "url": "https://pass.homelab.blacksd.tech/server",
+      "domain": "pass.homelab.blacksd.tech"
     }
   ],
   "base_url": "https://pass.homelab.blacksd.tech/",
