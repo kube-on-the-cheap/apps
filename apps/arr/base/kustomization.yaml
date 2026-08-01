@@ -12,3 +12,5 @@ resources:
   - bazarr/service.yaml
   - byparr/deployment.yaml
   - byparr/service.yaml
+  - seerr/deployment.yaml
+  - seerr/service.yaml

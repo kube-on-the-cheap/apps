@@ -6,9 +6,11 @@ resources:
   - pvc-radarr-config.yaml
   - pvc-prowlarr-config.yaml
   - pvc-bazarr-config.yaml
+  - pvc-seerr-config.yaml
   - pv-media.yaml
   - pvc-media.yaml
   - httproute-sonarr.yaml
   - httproute-radarr.yaml
   - httproute-prowlarr.yaml
   - httproute-bazarr.yaml
+  - httproute-seerr.yaml

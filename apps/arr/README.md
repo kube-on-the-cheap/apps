@@ -1,9 +1,9 @@
 # arr stack
 
-Media automation stack (Sonarr, Radarr, Prowlarr, Bazarr, ByParr) deployed to the `understairs` cluster in namespace `arr`.
+Media automation stack (Sonarr, Radarr, Prowlarr, Bazarr, ByParr, Seerr) deployed to the `understairs` cluster in namespace `arr`.
 
 - **Design spec:** `docs/superpowers/specs/2026-07-26-arr-stack-understairs-design.md`
-- **External access:** `sonarr|radarr|prowlarr|bazarr.homelab.blacksd.tech`, restricted to LAN (192.168.20.0/24) and Tailscale (100.64.0.0/10)
+- **External access:** `sonarr|radarr|prowlarr|bazarr|seerr.homelab.blacksd.tech`, restricted to LAN (192.168.20.0/24) and Tailscale (100.64.0.0/10)
 - **Media root:** NFS `nas.homelab.blacksd.tech:/volume1/Media/data`, mounted at `/media` in Sonarr/Radarr/Bazarr pods. The mount targets a subpath of the Media shared folder because DSM's NFS server refuses to export shared-folder roots directly — same pattern as audiobookshelf mounting `/volume1/Apps/audiobookshelf-media`.
 
 ## Prerequisites (one-time)
@@ -88,6 +88,15 @@ Settings → Subtitles → Anti-Captcha Options → FlareSolverr URL:
 ```
 http://byparr.arr.svc.cluster.local:8191
 ```
+
+### 8. Seerr → Sonarr / Radarr
+
+Complete the first-run wizard at `https://seerr.homelab.blacksd.tech`. When it asks for a media server, skip it (or point at a Plex/Jellyfin once you deploy one). Then Settings → Services:
+
+- **Sonarr:** hostname `sonarr.arr.svc.cluster.local`, port `8989`, API key from Sonarr's Settings → General
+- **Radarr:** hostname `radarr.arr.svc.cluster.local`, port `7878`, API key from Radarr's Settings → General
+
+For each service, set the root folder (e.g., `/media/grownups/tv`) and quality profile to match what Sonarr/Radarr expect. Seerr will not accept requests until at least one service is configured.
 
 ## Auth phase-2 (Authentik) — not yet implemented
 
