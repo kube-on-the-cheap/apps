@@ -40,6 +40,8 @@ spec:
               value: "1027"
             - name: PGID
               value: "100"
+            - name: LSIO_NON_ROOT_USER
+              value: "true"
           volumeMounts:
             - name: config
               mountPath: /config
