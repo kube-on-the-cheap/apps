@@ -27,7 +27,7 @@ spec:
         fsGroup: 100
       containers:
         - name: radarr
-          image: lscr.io/linuxserver/radarr:5.14.0
+          image: lscr.io/linuxserver/radarr:6.3.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
