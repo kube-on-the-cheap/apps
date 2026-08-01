@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mindwtr-auth-tokens
+  namespace: mindwtr
+type: Opaque
+# Bearer tokens gate every /v1/* request. Each token maps to its own
+# namespace on the backend (file-per-token JSON storage), so one
+# token = one person's data. Rotating a token means updating every
+# client that used it; delete old tokens by removing them from the
+# comma-separated list.
+#
+# Generate a new token with:
+#   openssl rand -hex 32
+# Length must be 20-512 chars (the backend rejects anything outside
+# this range).
+#
+# MINDWTR_CLOUD_CORS_ORIGIN co-lives here because both are
+# environment-scoped (the tokens change per install, the origin
+# changes per hostname) and both flow into the mindwtr-cloud
+# Deployment via the same envFrom secretRef.
+stringData:
+  MINDWTR_CLOUD_AUTH_TOKENS: ENC[AES256_GCM,data:nvJwoUQLsLrGOgyQ1U+nkR3kj7gltXdvr8P/Qya2Yih7SkLfic1fYk02yHcBjfUqYNLXGPGklZW3oP0xDdvHMg==,iv:Ch4pxlYoLuDznAUl0KNgUTLq+BAgZLZr6hFRdUYKD3I=,tag:AaxsHVJfvgZOC2uD9VVRJQ==,type:str]
+  MINDWTR_CLOUD_CORS_ORIGIN: ENC[AES256_GCM,data:R97qIQQtOJCnvlOA58usQws+80GBWf6hPLfPX0yFfOuako9A,iv:Fc+o1lmzzYSvaUHLTjNuJLkahPrS7bpbmC3Q5y4nrR4=,tag:75t6E44Huk4TznCWvUR2wA==,type:str]
+sops:
+  age:
+    - enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBvL0J5T0kvaXBtNFpNc0Vl
+        TCtENU5hMjVBaCtQSjhjVVA1NFJzanJuenlZCk9UdksvaUpsa29wZFdNbnlCd0h4
+        RWo3cHVRRDlNK3B0TmljVDNzT3J0NkkKLS0tIENQQkJ6RkV6WVJVbmNkNUFLY1RX
+        WlFVelU4ZkRLdEN3SzZ6OHVjL2tkRUEKu2WmO5q3tExqBpBzJal9PYawGWNtUQDu
+        bLQ8fhz/0kP4sTCF5Eqp0AdkIe1v9jSjhkqKRtWTNYrPTuT7529kmA==
+        -----END AGE ENCRYPTED FILE-----
+      recipient: age1rqldalz0wppytnn5qzkms98awx43u2kkea878wslktyu6sjrq35sfzktv4
+    - enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB0Z0xIekpYcWNKYUJ0b0Fs
+        VDFjZEhDZiswWjRUMlRKdy84S0s2UnIralRrCkg2V25VckxzcUtHb3huM1pmdG9j
+        RGUzZ0VGcjBndERkZlVnUWNVMjBjbkEKLS0tIE94R1czWWs0ZXJjbU5TVktlcUFr
+        clJQc2VFZnNXMjhqZzA1cEZXREV0cGcKis6RGgND8pYrwqOr9pEC4CQSwqBvrsYZ
+        Sp/bgZ6tjYXPVhNx82J7XiqbQ+Tp7u5eRRAtYOCM8YtmCABrarGJuw==
+        -----END AGE ENCRYPTED FILE-----
+      recipient: age1k9pgstv92fnq4mpupu2msd9j7zvv96l07ueqfckrv3nwq94t7vzq7typqx
+  encrypted_regex: ^(data|stringData)$
+  lastmodified: "2026-08-01T16:02:33Z"
+  mac: ENC[AES256_GCM,data:ujubFkEAnI/VlFrPMB1ilfqPca/OZfCohy9yEV7Rn+fjlWEv0v9pkdR19gpE7oBI3zFD1H70d7xx6riXYLGMrGfiHQW6AcbHqrCSEOn2j/DW8rmBfE+qrLd9LUlFlt/6vZ+hrLdqBSXnTl6U32mdBdhumex7PVhP62PiCfxJhic=,iv:R8PaqGFWVdMoe8U/6hcvX91rzxfxIGTt2zoIzIlu+U8=,tag:/WI3yV8jov9b7OOZsIIxGQ==,type:str]
+  mac_only_encrypted: true
+  pgp:
+    - created_at: "2026-08-01T16:02:16Z"
+      enc: |-
+        -----BEGIN PGP MESSAGE-----
+
+        hQIMA7McDQbiwetaAQ/+NhLROEpOGJSSCyRgpWfXg3YCce/CzeoQ089xFLjmbLFy
+        MH6C3RToa9zbtW+Ziciyai1l7nFjK3tj040EBW9ZPKJGyYjH+3RSk25mNtAFw9PI
+        Kev/9H5G6Di7WrzE+0OEFSRFIRURJgvzlD6FsNESU5uMJTkTXOIZBgTwOOKPWVw5
+        tpsuiCDP6U1d2J+wDAXZxUHnaH1BoVVqMzNn/yQyrJBmBL0+BLIec8HNk/I+X61p
+        ukCQ0Gf6UIzOChuc+mGgXqf2VsPDcUMS9qRN2WLsLiroNH/URlDDXPM7OLPyqmAI
+        h4eQLKDCG0TlrVt93mpR/eLr2UlF8AW3Us9Slcmiy79GBRn0kzfwmSJeiQyVsoba
+        rxRxlaGy25pCQNwo9NwrsNEcSX+t6U+EDVYPd5ZZfwbaj8hqeMv/aTzW/6URdIeB
+        y/L2rPjUoRQ4fY7VFDIF/AgctkADMxg9buI13HAhppRV/rgro6YLODH6jxEcFfJ6
+        xAfQBMsk2JBJYApwoTob6EYXzoBuZFABo85+d5rnmoxpeCHfRttjq6Ey5yYKMk4v
+        6GT8bgg8nxmWZsWJadVS8G4rMUtQuiDZ6o/Tq7bMlh+3p6JAa8SwOpSmxs5lqDT7
+        1jGmyd//NC6s+OVLTtmK++GsOUzyclnyZ4W8y952TMVZsBAghOESM9H+dhnz3HTS
+        XgGqSFZuzOm9cg4HM7icVGssrHumEN52XBxWXgnTbXf2YreLe50OMLS04ETJ7ddC
+        ohQwMS3FKfNNh00zIUMZ7VeojVZNhbx30Q6h1EOmCBwQd6V4FXWkZOCZ5Rm+S20=
+        =K4ma
+        -----END PGP MESSAGE-----
+      fp: B31C0D06E2C1EB5A
+  version: 3.13.1
