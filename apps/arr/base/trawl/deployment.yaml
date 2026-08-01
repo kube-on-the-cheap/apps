@@ -2,10 +2,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: byparr
+  name: trawl
   namespace: arr
   labels:
-    app.kubernetes.io/name: byparr
+    app.kubernetes.io/name: trawl
     app.kubernetes.io/component: solver
 spec:
   replicas: 1
@@ -13,17 +13,19 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app.kubernetes.io/name: byparr
+      app.kubernetes.io/name: trawl
       app.kubernetes.io/component: solver
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: byparr
+        app.kubernetes.io/name: trawl
         app.kubernetes.io/component: solver
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: minipc1
       containers:
-        - name: byparr
-          image: ghcr.io/thephaseless/byparr@sha256:01a46a2865d9a6db5eb8ead04ec0dd33b8fbe233e8565ae70b50d4cc0af4cfb0
+        - name: trawl
+          image: ghcr.io/germondai/trawl@sha256:728216a6a5e9654e3235bfa614c71e3847fe5826d3032fa2bca8083719ab355e
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -32,8 +34,11 @@ spec:
           env:
             - name: TZ
               value: "Europe/Rome"
-            - name: LOG_LEVEL
-              value: "info"
+            - name: BROWSER_POOL_SIZE
+              value: "1"
+          volumeMounts:
+            - name: dshm
+              mountPath: /dev/shm
           resources:
             requests:
               cpu: 100m
@@ -63,3 +68,8 @@ spec:
             periodSeconds: 10
             failureThreshold: 3
             timeoutSeconds: 15
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi

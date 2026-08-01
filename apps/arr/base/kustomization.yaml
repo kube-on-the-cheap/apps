@@ -10,7 +10,7 @@ resources:
   - prowlarr/service.yaml
   - bazarr/deployment.yaml
   - bazarr/service.yaml
-  - byparr/deployment.yaml
-  - byparr/service.yaml
+  - trawl/deployment.yaml
+  - trawl/service.yaml
   - seerr/deployment.yaml
   - seerr/service.yaml

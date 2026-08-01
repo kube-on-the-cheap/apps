@@ -1,6 +1,6 @@
 # arr stack
 
-Media automation stack (Sonarr, Radarr, Prowlarr, Bazarr, ByParr, Seerr) deployed to the `understairs` cluster in namespace `arr`.
+Media automation stack (Sonarr, Radarr, Prowlarr, Bazarr, Trawl, Seerr) deployed to the `understairs` cluster in namespace `arr`.
 
 - **Design spec:** `docs/superpowers/specs/2026-07-26-arr-stack-understairs-design.md`
 - **External access:** `sonarr|radarr|prowlarr|bazarr|seerr.homelab.blacksd.tech`, restricted to LAN (192.168.20.0/24) and Tailscale (100.64.0.0/10)
@@ -35,10 +35,10 @@ Test both. Once green, Prowlarr will push indexer configs to Sonarr/Radarr autom
 
 ### 2. Prowlarr → FlareSolverr URL
 
-Settings → Indexers → FlareSolverr URL:
+Settings → Indexers → FlareSolverr URL (Trawl is FlareSolverr-compatible):
 
 ```
-http://byparr.arr.svc.cluster.local:8191
+http://trawl.arr.svc.cluster.local:8191
 ```
 
 ### 3. Sonarr / Radarr → Download Client
@@ -81,12 +81,12 @@ Settings → Radarr:
 - Port: `7878`
 - API key: Radarr's API key
 
-### 7. Bazarr → ByParr
+### 7. Bazarr → Trawl
 
 Settings → Subtitles → Anti-Captcha Options → FlareSolverr URL:
 
 ```
-http://byparr.arr.svc.cluster.local:8191
+http://trawl.arr.svc.cluster.local:8191
 ```
 
 ### 8. Seerr → Sonarr / Radarr
