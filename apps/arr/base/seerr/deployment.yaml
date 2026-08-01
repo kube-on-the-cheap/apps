@@ -21,6 +21,8 @@ spec:
         app.kubernetes.io/name: seerr
         app.kubernetes.io/component: web
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: minipc1
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
