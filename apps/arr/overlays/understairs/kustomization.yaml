@@ -6,3 +6,5 @@ resources:
   - pvc-radarr-config.yaml
   - pvc-prowlarr-config.yaml
   - pvc-bazarr-config.yaml
+  - pv-media.yaml
+  - pvc-media.yaml
