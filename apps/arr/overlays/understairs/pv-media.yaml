@@ -20,4 +20,4 @@ spec:
     volumeHandle: arr-media
     volumeAttributes:
       server: nas.homelab.blacksd.tech
-      share: /volume1/Media
+      share: /volume1/Media/data

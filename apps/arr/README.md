@@ -4,19 +4,19 @@ Media automation stack (Sonarr, Radarr, Prowlarr, Bazarr, ByParr) deployed to th
 
 - **Design spec:** `docs/superpowers/specs/2026-07-26-arr-stack-understairs-design.md`
 - **External access:** `sonarr|radarr|prowlarr|bazarr.homelab.blacksd.tech`, restricted to LAN (192.168.20.0/24) and Tailscale (100.64.0.0/10)
-- **Media root:** NFS `nas.homelab.blacksd.tech:/volume1/Media`, mounted at `/media` in Sonarr/Radarr/Bazarr pods
+- **Media root:** NFS `nas.homelab.blacksd.tech:/volume1/Media/data`, mounted at `/media` in Sonarr/Radarr/Bazarr pods. The mount targets a subpath of the Media shared folder because DSM's NFS server refuses to export shared-folder roots directly — same pattern as audiobookshelf mounting `/volume1/Apps/audiobookshelf-media`.
 
 ## Prerequisites (one-time)
 
 On the NAS as an account with sudo:
 
 ```bash
-sudo mkdir -p /volume1/Media/{downloads/complete,downloads/incomplete,grownups/tv,grownups/movies,kids/tv,kids/movies}
-sudo chown -R 1027:100 /volume1/Media
-sudo chmod -R 775 /volume1/Media
+sudo mkdir -p /volume1/Media/data/{downloads/complete,downloads/incomplete,grownups/tv,grownups/movies,kids/tv,kids/movies}
+sudo chown -R 1027:100 /volume1/Media/data
+sudo chmod -R g+rwsX /volume1/Media/data
 ```
 
-Add an NFS export for `/volume1/Media` covering the understairs cluster CIDR (`rw`, `async`, `no_root_squash`, `insecure`).
+In DSM UI, add an NFS export for the `Media` shared folder covering the understairs cluster CIDR: `rw`, `async`, squash `No mapping`, non-privileged ports allowed, "Allow users to access mounted subfolders" enabled. The pods mount the `/data` subpath, not the shared-folder root — DSM's NFS server refuses share-root mounts even when they're advertised by `showmount`.
 
 ## Post-deploy configuration
 
