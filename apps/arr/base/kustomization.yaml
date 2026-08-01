@@ -8,3 +8,5 @@ resources:
   - radarr/service.yaml
   - prowlarr/deployment.yaml
   - prowlarr/service.yaml
+  - bazarr/deployment.yaml
+  - bazarr/service.yaml
