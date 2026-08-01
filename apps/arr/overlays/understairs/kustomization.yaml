@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - pvc-sonarr-config.yaml
+  - pvc-radarr-config.yaml
+  - pvc-prowlarr-config.yaml
+  - pvc-bazarr-config.yaml
+  - pv-media.yaml
+  - pvc-media.yaml
+  - httproute-sonarr.yaml
+  - httproute-radarr.yaml
+  - httproute-prowlarr.yaml
+  - httproute-bazarr.yaml
