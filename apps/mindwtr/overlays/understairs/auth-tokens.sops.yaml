@@ -21,7 +21,7 @@ type: Opaque
 # Deployment via the same envFrom secretRef.
 stringData:
   MINDWTR_CLOUD_AUTH_TOKENS: ENC[AES256_GCM,data:nvJwoUQLsLrGOgyQ1U+nkR3kj7gltXdvr8P/Qya2Yih7SkLfic1fYk02yHcBjfUqYNLXGPGklZW3oP0xDdvHMg==,iv:Ch4pxlYoLuDznAUl0KNgUTLq+BAgZLZr6hFRdUYKD3I=,tag:AaxsHVJfvgZOC2uD9VVRJQ==,type:str]
-  MINDWTR_CLOUD_CORS_ORIGIN: ENC[AES256_GCM,data:R97qIQQtOJCnvlOA58usQws+80GBWf6hPLfPX0yFfOuako9A,iv:Fc+o1lmzzYSvaUHLTjNuJLkahPrS7bpbmC3Q5y4nrR4=,tag:75t6E44Huk4TznCWvUR2wA==,type:str]
+  MINDWTR_CLOUD_CORS_ORIGIN: ENC[AES256_GCM,data:E/JMSjLXB3zSnTF6XJS13i54xXGeM/TtlVkw07pOc/Pk,iv:E8NYKCNn8lxPF56K3n1VGg31m+FYfdsqBThYjJYml1I=,tag:1UhypQ3eCqr5SjBuJ7EepA==,type:str]
 sops:
   age:
     - enc: |
@@ -43,8 +43,8 @@ sops:
         -----END AGE ENCRYPTED FILE-----
       recipient: age1k9pgstv92fnq4mpupu2msd9j7zvv96l07ueqfckrv3nwq94t7vzq7typqx
   encrypted_regex: ^(data|stringData)$
-  lastmodified: "2026-08-01T16:02:33Z"
-  mac: ENC[AES256_GCM,data:ujubFkEAnI/VlFrPMB1ilfqPca/OZfCohy9yEV7Rn+fjlWEv0v9pkdR19gpE7oBI3zFD1H70d7xx6riXYLGMrGfiHQW6AcbHqrCSEOn2j/DW8rmBfE+qrLd9LUlFlt/6vZ+hrLdqBSXnTl6U32mdBdhumex7PVhP62PiCfxJhic=,iv:R8PaqGFWVdMoe8U/6hcvX91rzxfxIGTt2zoIzIlu+U8=,tag:/WI3yV8jov9b7OOZsIIxGQ==,type:str]
+  lastmodified: "2026-08-01T18:00:56Z"
+  mac: ENC[AES256_GCM,data:oqx9fvR40Vpb9A5MNgMF6altvz3Edu9UeqtzRzeNcr51SY6mExyE3D6tKphI1XkaoqGFRzURViZq0hzjuey9BEwp/+63ohKMJKp43joCORTQfMOri7Wl+DVI80idnC0qYBZbmy1pMUrR3CAWQmjbNitSaQeBpyU2jp1sYkuC+LE=,iv:eAFGq2rg0P6LN1d1j6WmyUlW2flaisNWzbPgxbBTB1I=,tag:CT5jR/lR+NgFMbqo9AJ4oA==,type:str]
   mac_only_encrypted: true
   pgp:
     - created_at: "2026-08-01T16:02:16Z"

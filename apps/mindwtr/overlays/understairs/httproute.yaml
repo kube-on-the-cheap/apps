@@ -14,7 +14,7 @@ spec:
     - name: external
       namespace: envoy-gateway-system
   hostnames:
-    - mindwtr.homelab.blacksd.tech
+    - todo.homelab.blacksd.tech
   rules:
     - matches:
         - path:
@@ -41,7 +41,7 @@ spec:
     - name: external
       namespace: envoy-gateway-system
   hostnames:
-    - mindwtr.homelab.blacksd.tech
+    - todo.homelab.blacksd.tech
   rules:
     - matches:
         - path:
