@@ -6,3 +6,5 @@ resources:
   - sonarr/service.yaml
   - radarr/deployment.yaml
   - radarr/service.yaml
+  - prowlarr/deployment.yaml
+  - prowlarr/service.yaml
