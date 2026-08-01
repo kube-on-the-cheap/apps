@@ -8,3 +8,5 @@ resources:
   - pvc-bazarr-config.yaml
   - pv-media.yaml
   - pvc-media.yaml
+  - httproute-sonarr.yaml
+  - httproute-radarr.yaml
