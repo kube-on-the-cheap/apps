@@ -37,29 +37,29 @@ spec:
           resources:
             requests:
               cpu: 100m
-              memory: 256Mi
+              memory: 512Mi
             limits:
-              cpu: 1000m
-              memory: 768Mi
+              cpu: 2000m
+              memory: 2Gi
           startupProbe:
             httpGet:
               path: /health
               port: http
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             periodSeconds: 10
             failureThreshold: 30
-            timeoutSeconds: 5
+            timeoutSeconds: 15
           livenessProbe:
             httpGet:
               path: /health
               port: http
             periodSeconds: 30
             failureThreshold: 3
-            timeoutSeconds: 10
+            timeoutSeconds: 15
           readinessProbe:
             httpGet:
               path: /health
               port: http
             periodSeconds: 10
             failureThreshold: 3
-            timeoutSeconds: 5
+            timeoutSeconds: 15
