@@ -10,3 +10,5 @@ resources:
   - pvc-media.yaml
   - httproute-sonarr.yaml
   - httproute-radarr.yaml
+  - httproute-prowlarr.yaml
+  - httproute-bazarr.yaml
