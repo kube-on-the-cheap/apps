@@ -1,0 +1,117 @@
+---
+# The sync backend: Bun runtime, file-per-namespace JSON storage on
+# the mounted PVC. Bearer tokens gate access (see
+# MINDWTR_CLOUD_AUTH_TOKENS from the mindwtr-auth-tokens Secret).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mindwtr-cloud
+  namespace: mindwtr
+  labels:
+    app.kubernetes.io/name: mindwtr
+    app.kubernetes.io/component: cloud
+spec:
+  replicas: 1
+  # File-based storage on RWO PVC — recreate on rollout to avoid two
+  # pods writing to the same directory during a rolling update.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mindwtr
+      app.kubernetes.io/component: cloud
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mindwtr
+        app.kubernetes.io/component: cloud
+    spec:
+      containers:
+        - name: cloud
+          image: ghcr.io/dongdongbh/mindwtr-cloud:1.1.6
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8787
+              protocol: TCP
+          env:
+            - name: MINDWTR_CLOUD_DATA_DIR
+              value: /data
+            # Envoy Gateway is the single hop in front of the pod. The
+            # backend needs to trust X-Forwarded-For so rate-limit
+            # buckets are keyed by real client IP rather than the
+            # Envoy pod IP.
+            - name: MINDWTR_CLOUD_TRUST_PROXY_HEADERS
+              value: "true"
+          envFrom:
+            # MINDWTR_CLOUD_AUTH_TOKENS (comma-separated bearer
+            # tokens) and MINDWTR_CLOUD_CORS_ORIGIN come from here.
+            # CORS origin is namespace-external state (depends on the
+            # public hostname), so it lives with the tokens rather
+            # than in this base env block.
+            - secretRef:
+                name: mindwtr-auth-tokens
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 12
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            failureThreshold: 3
+            timeoutSeconds: 5
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: mindwtr-cloud-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mindwtr-cloud-data
+  namespace: mindwtr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: openebs-rawfile
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mindwtr-cloud
+  namespace: mindwtr
+spec:
+  selector:
+    app.kubernetes.io/name: mindwtr
+    app.kubernetes.io/component: cloud
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

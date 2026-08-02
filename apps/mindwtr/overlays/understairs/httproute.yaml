@@ -1,0 +1,52 @@
+---
+# API routes — /v1/* and /health hit the sync backend. Same hostname
+# as the PWA so clients don't run into CORS. Order matters: this
+# HTTPRoute must exist alongside the PWA route below; Gateway API
+# uses longest-prefix routing, so /v1/ and /health both match here
+# before falling through to the catch-all /.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mindwtr-cloud
+  namespace: mindwtr
+spec:
+  parentRefs:
+    - name: external
+      namespace: envoy-gateway-system
+  hostnames:
+    - todo.homelab.blacksd.tech
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /v1
+        - path:
+            type: PathPrefix
+            value: /health
+      backendRefs:
+        - name: mindwtr-cloud
+          port: 80
+---
+# PWA — everything else. The nginx image serves the static bundle at
+# /. The client stores its sync backend URL in localStorage after
+# first-run config; nothing on the server side needs to know the
+# public hostname.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mindwtr-app
+  namespace: mindwtr
+spec:
+  parentRefs:
+    - name: external
+      namespace: envoy-gateway-system
+  hostnames:
+    - todo.homelab.blacksd.tech
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: mindwtr-app
+          port: 80
