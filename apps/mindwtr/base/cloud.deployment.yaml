@@ -26,6 +26,12 @@ spec:
         app.kubernetes.io/name: mindwtr
         app.kubernetes.io/component: cloud
     spec:
+      # The mindwtr-cloud image runs as uid 1000 (`bun`) and needs
+      # write access to /data. PVCs come up owned root:root; fsGroup
+      # tells the kubelet to chown the mount at attach so the process
+      # can create its lock/JSON/attachment files.
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: cloud
           image: ghcr.io/dongdongbh/mindwtr-cloud:1.1.6
@@ -40,9 +46,15 @@ spec:
             # Envoy Gateway is the single hop in front of the pod. The
             # backend needs to trust X-Forwarded-For so rate-limit
             # buckets are keyed by real client IP rather than the
-            # Envoy pod IP.
+            # Envoy pod IP. Without TRUSTED_PROXY_IPS the app logs a
+            # warning and ignores forwarded headers — trust the full
+            # Kubernetes pod CIDR since Envoy pod IPs are ephemeral
+            # and there is nothing else on the pod network we would
+            # want to distrust.
             - name: MINDWTR_CLOUD_TRUST_PROXY_HEADERS
               value: "true"
+            - name: MINDWTR_CLOUD_TRUSTED_PROXY_IPS
+              value: "10.244.0.0/16"
           envFrom:
             # MINDWTR_CLOUD_AUTH_TOKENS (comma-separated bearer
             # tokens) and MINDWTR_CLOUD_CORS_ORIGIN come from here.
@@ -65,9 +77,14 @@ spec:
             httpGet:
               path: /health
               port: http
-            initialDelaySeconds: 5
+            # Bun cold start on arm64 (Raspberry Pi) is noticeably
+            # slower than on x86 — first observed 60s+ from container
+            # start to port bind. Budget = initialDelay + failure *
+            # period = 15 + 30*5 = 165s to keep headroom for image
+            # pull artifacts and cache-cold restarts.
+            initialDelaySeconds: 15
             periodSeconds: 5
-            failureThreshold: 12
+            failureThreshold: 30
             timeoutSeconds: 3
           livenessProbe:
             httpGet:
