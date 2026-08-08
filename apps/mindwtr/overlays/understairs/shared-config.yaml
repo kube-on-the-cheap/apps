@@ -1,0 +1,12 @@
+---
+# Config values shared across all tenants on this cluster. Currently
+# just the CORS origin, which is the public hostname the PWA is
+# served under — the same for every tenant since they all sync via
+# path-prefixed backends under one origin.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mindwtr-cloud-shared-config
+  namespace: mindwtr
+data:
+  MINDWTR_CLOUD_CORS_ORIGIN: "https://todo.homelab.blacksd.tech"
