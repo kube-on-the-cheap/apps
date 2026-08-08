@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mindwtr-auth-token
+type: Opaque
+# Marco's bearer token. This Secret feeds MINDWTR_CLOUD_AUTH_TOKENS
+# on the mindwtr-cloud-marco Deployment (via envFrom + Kustomize's
+# `-marco` nameSuffix, which rewrites the Deployment's Secret ref
+# to `mindwtr-auth-token-marco`).
+#
+# Value carried over from the pre-tenancy shared Secret, so no
+# client-side reconfiguration is needed on this device — same token
+# was already pasted into the PWA + mobile/desktop apps.
+#
+# Generate a fresh token with:
+#   openssl rand -hex 32
+# Rotating means editing this file, re-encrypting, letting Flux
+# reconcile, then updating every client that used the old value.
+stringData:
+  MINDWTR_CLOUD_AUTH_TOKENS: ENC[AES256_GCM,data:s+kQdh3YK1kA/nOuv1I4wz7HN9THxiQ5KhmdHwpWXk7ra+NFzqC3zwQod+1ZKsrSu7lpAtoBOMySUVAZaiotUw==,iv:YSyywx51nr7oDS/eA9ynMk2Y5HryH3jOWsr/1tlbvv0=,tag:A+MtB+zn6LpYpziqCmYK9g==,type:str]
+sops:
+  age:
+    - enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOd242c1IxbTNPbEM2b0xh
+        V01kRDk3ZkFERU1BWTVhMVZhQ011RGR2bFQ4Cmhwd29Mc3dyQmk4aG8vUndVbHRq
+        R2k1YUdIS2dHRWVpMGtEK1ZKQTJQM0kKLS0tIHdOdjVHYXlCbFNXc3RhTE50U0pE
+        YmZFcWtVaklvU3BjeVNUNlJZL0YxQnMKClYggKuiXXd80wsJ8q9i4JxUt1TtLUHa
+        whzyv2NTShEz3DoKVJVj5hTJGHM1TAkdVk2lMhafRpnOBRjVt/kdVw==
+        -----END AGE ENCRYPTED FILE-----
+      recipient: age1rqldalz0wppytnn5qzkms98awx43u2kkea878wslktyu6sjrq35sfzktv4
+    - enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBrdFhMUHRyWldkUGZBaThy
+        bFpTdVQwY3ZYTFRndUo5UzFNT0lUM21wMGdrCldSNHl1YlI0RC9oYU0wa1Arcjdh
+        TzgvbkhaSlowQkNwZ21SMW41NzNtd3cKLS0tIDltbmpSdU1rM1kwU0VqUmljQi8v
+        RlAxYmE5aVZxV2JuRDJ1b3VlaHpFdVUKyapUjx7XUUj1c/5ozFKuzfMJn8V1d4I/
+        XzXLR/RZxJ7IytYT1M8naetFEaWjGqub/j/j/RGLR4kkmvQ1aFlpMQ==
+        -----END AGE ENCRYPTED FILE-----
+      recipient: age1k9pgstv92fnq4mpupu2msd9j7zvv96l07ueqfckrv3nwq94t7vzq7typqx
+  encrypted_regex: ^(data|stringData)$
+  lastmodified: "2026-08-08T09:42:50Z"
+  mac: ENC[AES256_GCM,data:CnJGAcWAsX/94QbsSeohjxDPN+3iX7FC4qzpwE7pO0K/+CaHhIyMJjN2LCgnbOGHF8bRabwGtcc8CleCMSJB7KfTivvAK/QwGdu4sb8zGnlMMfKQyUyqqB/gwG+XYjijbYQMVc9kJAWnN0YJFEcO9xhQW68Jlh7j6XW5Lu+k5tg=,iv:XOh4BS+buSnXzFHH2Eg+eLx5nVQybVYshHxWU/i0u/4=,tag:MNaGMZbT42RqtYwmhCoG6A==,type:str]
+  mac_only_encrypted: true
+  pgp:
+    - created_at: "2026-08-08T09:42:50Z"
+      enc: |-
+        -----BEGIN PGP MESSAGE-----
+
+        hQIMA7McDQbiwetaAQ/8DDfnuJUcoA0b/7Afv2zLBgp5efac/IbcYXGqCI6PDHk+
+        EkP7ra0scRt5TrwyjOzOgvVBukJiYkEIUFarZTvphmNtCf7H4ALrpu238zuyuLw9
+        PLLUV/U/jV50Z9bwqLdTPw//NyJZLNjIoPMee02fEMw+iFCU6nEXnTvzCA3t1VGH
+        AcllOwmxIYeyZGN+wgmG+Cvvw8bL4bzYEOgLWULdI71YpntzoysHWmdxHgirDUKi
+        46M059t/Dw3o3RHtMf/xFstrYdnsrF/xe0EjniuTKi3hSql2IHWRk3bzFurVkgdZ
+        +yeFP0hJM87kcVU+2MrAubYdGQb3Imjh21ZSoNT3Pqb83VdtE79Vt1VJvmvkUsBv
+        xdn8TCSqK2XLJso91FsV5pKt6RIb6nvDWWfNkvq53LOu75RvH8vT5Zqmu5bX26ma
+        HFNrO3ooLQvDqyXjD58HTgYlPbAjSFQtrHxiUOU5g40AdBADl7EMg2LmQ5Nxl6Aa
+        FVdL/gR0qkAmnPRV1KMu5RPAJt4vNI5Dr3A7qCuhZZg8VbGMyWgWmYhYpWFVsB0D
+        wl7CtFVhbqS8AL21l0Zw9VqeJy/P70Szf90I5x3Up8mUllYWUxdWp3tEnJL1SX2f
+        C9JEHQBZWDDqSjUCh3pKYyBKy6BfCnV7RSkZYNLSrWSDuBomgJ+nJL7PL+VAUG3S
+        XgFSfnuSzUzNs4TEEVJq5Xkh9bpl2idg89xCZyVbnqLFQ231W0zZGs2ahJn7PKEi
+        akCGGK6cl2ArQCfWMPu+W4JmhK+cbUmSjwnRFZa1H1f5oSJtodaU4o4QiExV2sQ=
+        =ypuh
+        -----END PGP MESSAGE-----
+      fp: B31C0D06E2C1EB5A
+  version: 3.13.1
