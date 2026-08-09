@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: mindwtr
+# Everything from the component (Deployment, Service, PVC) gets
+# `-marco` appended, so we end up with mindwtr-cloud-marco,
+# mindwtr-cloud-marco (Service), mindwtr-cloud-data-marco (PVC).
+# Kustomize's default nameReference rules rewrite the Secret ref
+# on envFrom and the PVC ref on the Deployment's volumes to match.
+nameSuffix: -marco
+# `tenant: marco` gets added to every resource's labels AND (crucially)
+# to the pod's label selector via includeSelectors. Without this, the
+# Service selector `{app.k8s.io/component: cloud}` would match every
+# tenant's pod in the namespace — traffic would randomly land on
+# whichever pod matched first.
+labels:
+  - includeSelectors: true
+    pairs:
+      tenant: marco
+components:
+  - ../../../../components/cloud-tenant
+resources:
+  - auth-token.sops.yaml

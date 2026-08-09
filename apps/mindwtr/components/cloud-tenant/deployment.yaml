@@ -1,12 +1,17 @@
 ---
-# The sync backend: Bun runtime, file-per-namespace JSON storage on
-# the mounted PVC. Bearer tokens gate access (see
-# MINDWTR_CLOUD_AUTH_TOKENS from the mindwtr-auth-tokens Secret).
+# One instance of the Mindwtr sync backend, sized for a single user.
+# The component leaves the resource names as `mindwtr-cloud` /
+# `mindwtr-cloud-data`; each tenant overlay applies a `nameSuffix`
+# (e.g. `-marco`) so the actual in-cluster names become
+# `mindwtr-cloud-marco`, `mindwtr-cloud-marco-data`, etc.
+#
+# The tenant overlay is also responsible for creating the SOPS
+# Secret this Deployment references via envFrom
+# (`mindwtr-auth-token`, again nameSuffixed).
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mindwtr-cloud
-  namespace: mindwtr
   labels:
     app.kubernetes.io/name: mindwtr
     app.kubernetes.io/component: cloud
@@ -55,14 +60,23 @@ spec:
               value: "true"
             - name: MINDWTR_CLOUD_TRUSTED_PROXY_IPS
               value: "10.244.0.0/16"
+            # Overlay-supplied per-hostname value — every tenant of a
+            # given cluster serves under the same public origin, so
+            # this comes from a shared ConfigMap in the overlay
+            # rather than the per-tenant Secret.
+            - name: MINDWTR_CLOUD_CORS_ORIGIN
+              valueFrom:
+                configMapKeyRef:
+                  name: mindwtr-cloud-shared-config
+                  key: MINDWTR_CLOUD_CORS_ORIGIN
           envFrom:
-            # MINDWTR_CLOUD_AUTH_TOKENS (comma-separated bearer
-            # tokens) and MINDWTR_CLOUD_CORS_ORIGIN come from here.
-            # CORS origin is namespace-external state (depends on the
-            # public hostname), so it lives with the tokens rather
-            # than in this base env block.
+            # MINDWTR_CLOUD_AUTH_TOKENS lives in the per-tenant
+            # Secret. Under `nameSuffix: -marco` this becomes
+            # `mindwtr-auth-token-marco` — Kustomize rewrites the
+            # reference automatically because Secret ref updates are
+            # in its default configuration.
             - secretRef:
-                name: mindwtr-auth-tokens
+                name: mindwtr-auth-token
           volumeMounts:
             - name: data
               mountPath: /data
@@ -103,13 +117,16 @@ spec:
       volumes:
         - name: data
           persistentVolumeClaim:
+            # Kustomize's default nameReference configuration rewrites
+            # PVC references on Deployments, so `mindwtr-cloud-data`
+            # becomes `mindwtr-cloud-data-marco` under the tenant
+            # nameSuffix.
             claimName: mindwtr-cloud-data
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mindwtr-cloud-data
-  namespace: mindwtr
 spec:
   accessModes:
     - ReadWriteOnce
@@ -122,7 +139,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: mindwtr-cloud
-  namespace: mindwtr
 spec:
   selector:
     app.kubernetes.io/name: mindwtr
