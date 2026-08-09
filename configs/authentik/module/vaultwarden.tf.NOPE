@@ -1,0 +1,110 @@
+# Authentik 2026.x stopped auto-advertising offline_access in
+# scopes_supported. Vaultwarden's SSO client requests offline_access to
+# obtain a refresh token — without it, sessions die at every id_token
+# expiry (~10 min) and users are bounced back to the SSO flow. A
+# per-provider mapping is registered so the scope shows up in the
+# discovery document and the authorize endpoint accepts it.
+#
+# Kept separate from Grimmory's identically-purposed mapping so the two
+# providers can be modified independently; Authentik keys mappings by
+# `name`, not `scope_name`, so the duplicate scope name is fine.
+resource "authentik_property_mapping_provider_scope" "vaultwarden_offline_access" {
+  name       = "Vaultwarden: offline_access"
+  scope_name = "offline_access"
+  expression = "return {}"
+}
+
+resource "authentik_provider_oauth2" "vaultwarden" {
+  name               = "Vaultwarden"
+  client_id          = random_id.vaultwarden_client_id.hex
+  client_secret      = random_password.vaultwarden_client_secret.result
+  client_type        = "confidential"
+  authorization_flow = data.authentik_flow.authorization.id
+  invalidation_flow  = data.authentik_flow.invalidation.id
+
+  allowed_redirect_uris = [
+    {
+      matching_mode     = "strict"
+      url               = "https://vault.homelab.blacksd.tech/identity/connect/oidc-signin"
+      redirect_uri_type = "authorization"
+    },
+  ]
+
+  property_mappings = [
+    data.authentik_property_mapping_provider_scope.openid.id,
+    data.authentik_property_mapping_provider_scope.profile.id,
+    data.authentik_property_mapping_provider_scope.email.id,
+    authentik_property_mapping_provider_scope.vaultwarden_offline_access.id,
+  ]
+
+  # Vaultwarden's SSO backend matches accounts by verified email. Using
+  # the user's email as the OIDC subject keeps that mapping stable
+  # across username changes; the alternative (`user_username`) would
+  # break the association if someone ever renames their Authentik user.
+  sub_mode                   = "user_email"
+  include_claims_in_id_token = true
+
+  # Authentik 2026.5 defaults grant_types to an empty list on
+  # API-created providers regardless of client_type. Without this, the
+  # authorize endpoint rejects every request with "Invalid grant_type
+  # for provider" → "The request is otherwise malformed". Same
+  # workaround as the Grimmory provider.
+  grant_types = [
+    "authorization_code",
+    "refresh_token",
+  ]
+
+  # RS256-sign id_tokens against the stock self-signed cert so the JWKS
+  # endpoint publishes a verification key. HMAC-with-client-secret would
+  # also work for a confidential client but pins Vaultwarden to the
+  # secret rather than the JWKS-published public key, making rotation
+  # noisier.
+  signing_key = data.authentik_certificate_key_pair.default.id
+}
+
+resource "random_id" "vaultwarden_client_id" {
+  byte_length = 20
+}
+
+# Vaultwarden is a confidential client and authenticates to the token
+# endpoint with a client_secret. Authentik auto-generates one when the
+# field is omitted, but generating it via `random_password` keeps the
+# value in Terraform state and lets it be surfaced as a sensitive
+# output for manual paste into the Vaultwarden admin UI.
+resource "random_password" "vaultwarden_client_secret" {
+  length  = 64
+  special = false
+}
+
+resource "authentik_application" "vaultwarden" {
+  name              = "Vaultwarden"
+  slug              = "vaultwarden"
+  protocol_provider = authentik_provider_oauth2.vaultwarden.id
+}
+
+# Grant the household `family` group access to the Vaultwarden
+# application. Without an explicit policy binding, Authentik defaults
+# to denying every user with "Request has been denied". Mirrors the
+# Grimmory binding.
+resource "authentik_policy_binding" "vaultwarden_family" {
+  target = authentik_application.vaultwarden.uuid
+  group  = authentik_group.family.id
+  order  = 0
+}
+
+output "vaultwarden_client_id" {
+  description = "Client ID for the Authentik-side Vaultwarden OIDC application. Paste into the Vaultwarden admin UI (`/admin` → Settings → OpenID Connect SSO settings) as `Client ID`. Read with `terragrunt output -raw vaultwarden_client_id`."
+  value       = authentik_provider_oauth2.vaultwarden.client_id
+  sensitive   = true
+}
+
+output "vaultwarden_client_secret" {
+  description = "Client secret for the Authentik-side Vaultwarden OIDC application. Paste into the Vaultwarden admin UI as `Client Key`. Read with `terragrunt output -raw vaultwarden_client_secret`."
+  value       = authentik_provider_oauth2.vaultwarden.client_secret
+  sensitive   = true
+}
+
+output "vaultwarden_issuer_url" {
+  description = "OIDC issuer URL for the Authentik-side Vaultwarden application. Paste into the Vaultwarden admin UI as `Authority Server` (trailing slash required). The discovery document lives at `<issuer>/.well-known/openid-configuration`. Read with `terragrunt output -raw vaultwarden_issuer_url`."
+  value       = format("%s/application/o/%s/", trimsuffix(var.authentik_url, "/"), authentik_application.vaultwarden.slug)
+}
