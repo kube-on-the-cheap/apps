@@ -104,7 +104,11 @@ Shared folders show `d---------+` in `ls -la` when they're DSM-ACL-managed. The 
 
 ### The `crossmnt` NFS export option (Allow subfolder mounts) breaks fresh shares
 
-DSM's UI checkbox "Allow users to access mounted subfolders" sets `crossmnt` on the NFS export. On newly-created shares, this interacts badly with NFSv4 pseudo-root resolution and causes ENOENT for the share root itself. Leave the checkbox OFF for our shares — subpath mounts still work fine without it (see `pv-media.yaml` which mounts `/volume1/Media/data`, not the share root).
+DSM's UI checkbox "Allow users to access mounted subfolders" sets `crossmnt` on the NFS export. On newly-created shares, this interacts badly with NFSv4 pseudo-root resolution and causes ENOENT for the share root itself.
+
+**Rule:** leave the checkbox OFF while a share is fresh and until every intended cluster mount has succeeded at least once. Subpath mounts still work fine without it — see `pv-media.yaml` which mounts `/volume1/Media/data`, not the share root.
+
+**Safe to enable later on an established share.** Once the share has been mounted successfully and pods are Ready, enabling the checkbox does NOT retroactively break existing mounts (`exportfs -ra` reloads the export table but doesn't unmount live clients). Verified on 2026-08-09 when we enabled it on `Media` to let Kodi mount `/volume1/Media/data/grownups/movies` — all six arr pods stayed 1/1 Running, zero restarts, writes still worked. If you need to enable it for a downstream consumer (Kodi, Plex, another workstation), do it and just watch `kubectl -n arr get pods -w` for a minute afterward.
 
 ### DSM NFSv4 identity mapping shows nobody:nobody in pods
 
