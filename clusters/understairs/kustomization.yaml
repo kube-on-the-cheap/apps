@@ -9,5 +9,6 @@ resources:
   - mindwtr.yaml
   - minecraft-bedrock.yaml
   - paperless-ngx.yaml
+  - reactive-resume.yaml
   - readeck.yaml
   - vaultwarden.yaml
