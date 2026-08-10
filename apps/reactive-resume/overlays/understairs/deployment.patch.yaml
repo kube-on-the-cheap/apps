@@ -8,7 +8,13 @@ spec:
     spec:
       containers:
         - name: reactive-resume
-          image: amruthpillai/reactive-resume:v5.2.5@sha256:e5bf0bcb604df25310c819515689a6ca913f9180788338498f0713d93cb92040
+          # Tag-only, no digest pin: understairs is a mixed-arch cluster
+          # (amd64 mini PC + arm64 Pi), so scheduling can land the pod
+          # on either arch. A digest pin locks to one architecture and
+          # blows up as `exec format error` on the other; the container
+          # runtime resolves the tag against the manifest list at pull
+          # time and picks the right image for the node's arch.
+          image: amruthpillai/reactive-resume:v5.2.5
           env:
             - name: TZ
               value: "Etc/UTC"
