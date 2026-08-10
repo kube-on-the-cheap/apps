@@ -86,19 +86,24 @@ resource "authentik_policy_binding" "reactive_resume_grownups" {
   order  = 0
 }
 
-output "reactive_resume_client_id" {
-  description = "Client ID for the Authentik-side Reactive Resume OIDC application. Paste into apps/reactive-resume/overlays/understairs/secrets.sops.yaml as `OAUTH_CLIENT_ID`. Read with `terragrunt output -raw reactive_resume_client_id`."
-  value       = authentik_provider_oauth2.reactive_resume.client_id
+# One consolidated object output per OIDC client. Everything the app
+# needs (client_id, client_secret, discovery_url) is namespaced under a
+# single output so the reader is `terragrunt output -json reactive_resume
+# | jq -r '.<field>'` regardless of which field they want. The whole
+# object is marked sensitive because it carries the client_secret;
+# Terraform will refuse to print any of the fields without `-json` /
+# `-raw <path>`, which matches how the values get consumed (piped into
+# `sops --encrypt`, never eyeballed).
+output "reactive_resume" {
+  description = "Authentik OIDC client for Reactive Resume. Read with `terragrunt output -json reactive_resume` and pipe fields into apps/reactive-resume/overlays/understairs/secrets.sops.yaml (OAUTH_CLIENT_ID, OAUTH_CLIENT_SECRET) plus the deployment env (OAUTH_DISCOVERY_URL)."
   sensitive   = true
-}
-
-output "reactive_resume_client_secret" {
-  description = "Client secret for the Authentik-side Reactive Resume OIDC application. Paste into apps/reactive-resume/overlays/understairs/secrets.sops.yaml as `OAUTH_CLIENT_SECRET`. Read with `terragrunt output -raw reactive_resume_client_secret`."
-  value       = authentik_provider_oauth2.reactive_resume.client_secret
-  sensitive   = true
-}
-
-output "reactive_resume_discovery_url" {
-  description = "OIDC discovery URL for the Authentik-side Reactive Resume application. Wire into the deployment's `OAUTH_DISCOVERY_URL` env var. Read with `terragrunt output -raw reactive_resume_discovery_url`."
-  value       = format("%s/application/o/%s/.well-known/openid-configuration", trimsuffix(var.authentik_url, "/"), authentik_application.reactive_resume.slug)
+  value = {
+    client_id     = authentik_provider_oauth2.reactive_resume.client_id
+    client_secret = authentik_provider_oauth2.reactive_resume.client_secret
+    discovery_url = format(
+      "%s/application/o/%s/.well-known/openid-configuration",
+      trimsuffix(var.authentik_url, "/"),
+      authentik_application.reactive_resume.slug,
+    )
+  }
 }
