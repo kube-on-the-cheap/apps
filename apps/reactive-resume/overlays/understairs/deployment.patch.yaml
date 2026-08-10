@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reactive-resume
+spec:
+  template:
+    spec:
+      containers:
+        - name: reactive-resume
+          image: amruthpillai/reactive-resume:v5.2.5@sha256:e5bf0bcb604df25310c819515689a6ca913f9180788338498f0713d93cb92040
+          env:
+            - name: TZ
+              value: "Etc/UTC"
+            - name: PORT
+              value: "3000"
+            - name: APP_URL
+              value: "https://cv.homelab.blacksd.tech"
+            - name: LOCAL_STORAGE_PATH
+              value: "/app/data"
+            - name: OAUTH_PROVIDER_NAME
+              value: "Authentik"
+            - name: OAUTH_DISCOVERY_URL
+              value: "https://auth.cloud.blacksd.tech/application/o/reactive-resume/.well-known/openid-configuration"
+            - name: OAUTH_SCOPES
+              value: "openid profile email"
+            - name: FLAG_DISABLE_EMAIL_AUTH
+              value: "true"
+            # FLAG_DISABLE_SIGNUPS gates OAuth-provisioned signups too
+            # (better-auth's genericOAuth plugin binds disableSignUp to
+            # this flag). Leaving it "false" is what allows the very
+            # first Authentik login to provision a local user record;
+            # access is still gated by the authentik_policy_binding to
+            # the `grownups` group upstream, so this doesn't open
+            # signups to anyone Authentik hasn't already vetted.
+            - name: FLAG_DISABLE_SIGNUPS
+              value: "false"
+            - name: SMTP_HOST
+              value: "smtp.email.eu-frankfurt-1.oci.oraclecloud.com"
+            - name: SMTP_PORT
+              value: "587"
+            - name: SMTP_SECURE
+              value: "false"
+            - name: SMTP_FROM
+              value: "Reactive Resume (Marco's Homelab) <do-not-reply@mail.cloud.blacksd.tech>"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: reactive-resume-pg-app
+                  key: uri
+            - name: AUTH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: reactive-resume-secrets
+                  key: AUTH_SECRET
+            - name: OAUTH_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: reactive-resume-secrets
+                  key: OAUTH_CLIENT_ID
+            - name: OAUTH_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: reactive-resume-secrets
+                  key: OAUTH_CLIENT_SECRET
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: reactive-resume-secrets
+                  key: SMTP_USER
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: reactive-resume-secrets
+                  key: SMTP_PASS
