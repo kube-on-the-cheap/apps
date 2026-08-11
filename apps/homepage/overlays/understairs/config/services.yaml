@@ -26,6 +26,10 @@
           type: paperlessngx
           url: http://paperless-ngx.paperless-ngx.svc.cluster.local
           key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
+    - Reactive Resume:
+        href: https://cv.homelab.blacksd.tech
+        description: Resume / CV builder
+        icon: reactive-resume.svg
     - Readeck:
         href: https://reader.homelab.blacksd.tech
         description: Read-later
