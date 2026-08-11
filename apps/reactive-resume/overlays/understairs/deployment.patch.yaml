@@ -32,6 +32,13 @@ spec:
               value: "https://cv.homelab.blacksd.tech"
             - name: LOCAL_STORAGE_PATH
               value: "/app/data"
+            # AI Agent Workspace (optional feature). Redis is a
+            # single-pod in-namespace Deployment with in-memory-only
+            # storage; the AI workspace uses it for session-scoped
+            # state (chat threads, job queue) that doesn't need to
+            # survive a restart.
+            - name: REDIS_URL
+              value: "redis://redis:6379"
             - name: OAUTH_PROVIDER_NAME
               value: "Authentik"
             - name: OAUTH_DISCOVERY_URL
@@ -67,6 +74,14 @@ spec:
                 secretKeyRef:
                   name: reactive-resume-secrets
                   key: AUTH_SECRET
+            # Encrypts saved AI provider credentials at rest in
+            # Postgres. Rotating invalidates any keys users have
+            # already saved through the AI Agent UI.
+            - name: ENCRYPTION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: reactive-resume-secrets
+                  key: ENCRYPTION_SECRET
             - name: OAUTH_CLIENT_ID
               valueFrom:
                 secretKeyRef:
