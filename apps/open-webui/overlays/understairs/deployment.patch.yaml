@@ -6,6 +6,23 @@ metadata:
 spec:
   template:
     spec:
+      # Pin to the amd64 mini-PC. Rationale:
+      # 1. Image is ~1.6 GB compressed — the arm64 Pi took 20+ min to
+      #    pull it once, and its slower CPU couldn't get the app
+      #    through startup migrations + Alembic warm-up before the
+      #    startup probe timed out (crash loop).
+      # 2. Open WebUI is a Python app that will chew CPU under
+      #    request load (websocket + upstream API-call fan-out). The
+      #    mini-PC has 4× the RAM (~32 GB vs ~8 GB) and faster
+      #    per-core throughput.
+      # 3. The Pi in this cluster also serves as control plane
+      #    workload target; keeping heavy user-facing apps off it
+      #    reduces the blast radius of a resource spike.
+      # `openebs-rawfile` is node-local storage anyway, so this
+      # constraint doesn't restrict us any further than reality
+      # already does.
+      nodeSelector:
+        kubernetes.io/hostname: minipc1
       containers:
         - name: open-webui
           # Tag-only, no digest pin: understairs is a mixed-arch cluster
