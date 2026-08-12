@@ -8,6 +8,7 @@ resources:
   - karakeep.yaml
   - mindwtr.yaml
   - minecraft-bedrock.yaml
+  - open-webui.yaml
   - paperless-ngx.yaml
   - reactive-resume.yaml
   - readeck.yaml
