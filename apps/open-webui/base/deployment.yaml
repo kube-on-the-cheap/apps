@@ -61,12 +61,20 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+          # Open WebUI runs Alembic migrations at startup that grow
+          # with every release (v0.11.0 has ~80 upgrade steps). On a
+          # cold-boot into an empty DB the sequence can easily take
+          # 5+ minutes on this cluster's hardware; a fresh
+          # deployment on the arm64 Pi with the ~1.6 GB image
+          # crash-looped repeatedly at the previous 5m15s budget.
+          # A 20-minute startup budget swallows migration time on
+          # any node without disturbing steady-state liveness.
           startupProbe:
             tcpSocket:
               port: http
             initialDelaySeconds: 15
             periodSeconds: 10
-            failureThreshold: 30
+            failureThreshold: 120
             timeoutSeconds: 5
           livenessProbe:
             tcpSocket:
