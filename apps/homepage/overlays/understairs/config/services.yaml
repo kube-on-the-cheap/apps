@@ -18,6 +18,10 @@
         href: https://bookmarks.homelab.blacksd.tech
         description: Bookmark manager
         icon: karakeep.svg
+    - Open WebUI:
+        href: https://ai.homelab.blacksd.tech
+        description: Chat + LLM API router
+        icon: open-webui.svg
     - Paperless-ngx:
         href: https://paperless.homelab.blacksd.tech
         description: Document archive
