@@ -54,13 +54,20 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /app/backend/data
+          # Open WebUI's Python process loads embedding libraries
+          # (sentence-transformers/torch) even when only wired to
+          # external APIs; steady-state RSS sits around 700 MB–1 GB
+          # and spikes higher during startup and RAG operations.
+          # Initial 512Mi limit OOMKilled (exit 137) right after
+          # Alembic finished. 2Gi gives comfortable headroom on
+          # minipc1 (32 GB total) without being extravagant.
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
-            limits:
-              cpu: 500m
+              cpu: 250m
               memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 2Gi
           # Open WebUI runs Alembic migrations at startup that grow
           # with every release (v0.11.0 has ~80 upgrade steps). On a
           # cold-boot into an empty DB the sequence can easily take
