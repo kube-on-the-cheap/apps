@@ -5,7 +5,6 @@ resources:
   - audiobookshelf.yaml
   - grimmory.yaml
   - homepage.yaml
-  - karakeep.yaml
   - linkwarden.yaml
   - mindwtr.yaml
   - minecraft-bedrock.yaml
