@@ -58,8 +58,9 @@ spec:
               value: "https://bookmarks.homelab.blacksd.tech"
             - name: MEILI_HOST
               value: "http://meilisearch:7700"
-            - name: STORAGE_FOLDER
-              value: "/data"
+            # STORAGE_FOLDER is intentionally unset. It defaults to a
+            # relative path under WORKDIR (/data), and the archives live
+            # inside the PVC mounted at /data/data — see volumeMounts below.
             # Kill local signup entirely — OIDC provisions users.
             - name: NEXT_PUBLIC_DISABLE_REGISTRATION
               value: "true"
@@ -103,8 +104,13 @@ spec:
                   name: linkwarden-oidc
                   key: OIDC_CLIENT_SECRET
           volumeMounts:
+            # Nested mount: WORKDIR is /data and contains the app tree
+            # (apps/, node_modules/, packages/). Mounting the PVC at
+            # /data would shadow all of that and break `prisma migrate
+            # deploy` on startup. Upstream docker-compose mounts at
+            # /data/data; mirror it.
             - name: data
-              mountPath: /data
+              mountPath: /data/data
           resources:
             requests:
               cpu: 100m
