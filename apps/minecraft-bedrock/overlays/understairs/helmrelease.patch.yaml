@@ -4,6 +4,7 @@ kind: HelmRelease
 metadata:
   name: minecraft-bedrock
 spec:
+  suspend: true
   valuesFrom:
     - kind: ConfigMap
       name: minecraft-bedrock-values
