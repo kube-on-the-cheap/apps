@@ -18,13 +18,16 @@ resource "authentik_provider_oauth2" "linkwarden" {
   authorization_flow = data.authentik_flow.authorization.id
   invalidation_flow  = data.authentik_flow.invalidation.id
 
-  # NextAuth's generic OIDC provider is hardcoded to the slug `oidc`,
-  # so the callback path is /api/auth/callback/oidc (verified against
-  # apps/web/pages/api/v1/auth/[...nextauth].ts at Linkwarden v2.16.0).
+  # Linkwarden mounts NextAuth at /api/v1/auth/ (file lives at
+  # apps/web/pages/api/v1/auth/[...nextauth].ts), so the callback path
+  # is /api/v1/auth/callback/oidc — NOT NextAuth's default
+  # /api/auth/callback/oidc. NEXTAUTH_URL must be set to the full
+  # https://<host>/api/v1/auth prefix so NextAuth generates matching
+  # callback URLs in its /providers response (see the app Deployment).
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://bookmarks.homelab.blacksd.tech/api/auth/callback/oidc"
+      url               = "https://bookmarks.homelab.blacksd.tech/api/v1/auth/callback/oidc"
       redirect_uri_type = "authorization"
     },
   ]

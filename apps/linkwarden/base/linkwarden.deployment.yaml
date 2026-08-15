@@ -54,8 +54,13 @@ spec:
           env:
             - name: TZ
               value: "Europe/Rome"
+            # Trailing /api/v1/auth is required: Linkwarden mounts
+            # NextAuth at that prefix (not the default /api/auth), and
+            # NEXTAUTH_URL is what NextAuth uses to build callback URLs
+            # in its /providers response. Without the suffix, NextAuth
+            # advertises /api/auth/callback/oidc, which 404s.
             - name: NEXTAUTH_URL
-              value: "https://bookmarks.homelab.blacksd.tech"
+              value: "https://bookmarks.homelab.blacksd.tech/api/v1/auth"
             - name: MEILI_HOST
               value: "http://meilisearch:7700"
             # STORAGE_FOLDER is intentionally unset. It defaults to a
