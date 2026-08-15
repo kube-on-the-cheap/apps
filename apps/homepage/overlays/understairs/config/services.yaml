@@ -14,10 +14,10 @@
         icon: mdi-bookshelf
 
 - Tools:
-    - Karakeep:
+    - Linkwarden:
         href: https://bookmarks.homelab.blacksd.tech
         description: Bookmark manager
-        icon: karakeep.svg
+        icon: linkwarden.svg
     - Open WebUI:
         href: https://ai.homelab.blacksd.tech
         description: Chat + LLM API router
