@@ -1,0 +1,25 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: linkwarden
+spec:
+  template:
+    spec:
+      # Pin to the amd64 mini-PC. Rationale:
+      # 1. Linkwarden's image bundles Chromium (~1 GB compressed) — the
+      #    arm64 Pi's slower storage and CPU make the first-pull cycle
+      #    painful (Open WebUI took 20+ min on this node) and probes
+      #    can time out before the app finishes first-run Prisma
+      #    migrations.
+      # 2. The app spawns headless Chromium on every archive job. That
+      #    puts the crawler load on the same pod that serves user
+      #    requests, so a small node runs out of headroom quickly.
+      # 3. The Pi in this cluster also serves as control plane
+      #    workload target; keeping heavy user-facing apps off it
+      #    reduces the blast radius of a resource spike.
+      # `openebs-rawfile` is node-local storage anyway, so this
+      # constraint doesn't restrict us any further than reality
+      # already does.
+      nodeSelector:
+        kubernetes.io/hostname: minipc1
