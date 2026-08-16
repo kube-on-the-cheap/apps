@@ -1,7 +1,9 @@
 # Extra NetBox configuration appended to configuration.py by the
 # netbox-community/netbox-chart via extraConfig[].configMap.name.
-# The .yaml extension is a chart convention; the file body is
-# Python, not YAML.
+# Named `.py` locally so pre-commit's check-yaml hook doesn't reject
+# it; the overlay's configMapGenerator maps this file to the
+# `oidc-config.yaml` ConfigMap key the chart mounts (Task 10 uses
+# kustomize's `KEY=SOURCE` file syntax).
 
 import os
 
