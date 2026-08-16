@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: readeck
+  namespace: readeck
+spec:
+  template:
+    spec:
+      containers:
+        - name: readeck
+          env:
+            - name: READECK_DATABASE_SOURCE
+              valueFrom:
+                secretKeyRef:
+                  name: readeck-pg-app
+                  key: uri
+            # Env prefix is READECK_MAIL_*, not READECK_EMAIL_* — the TOML
+            # section is [email] but the env vars use MAIL_. Upstream
+            # asymmetry, confirmed in configs/configs.go.
+            - name: READECK_MAIL_HOST
+              value: "smtp.email.eu-frankfurt-1.oci.oraclecloud.com"
+            - name: READECK_MAIL_PORT
+              value: "587"
+            - name: READECK_MAIL_ENCRYPTION
+              value: "starttls"
+            - name: READECK_MAIL_FROM
+              value: "Marco's Homelab - Readeck <do-not-reply@mail.cloud.blacksd.tech>"
+            - name: READECK_MAIL_FROMNOREPLY
+              value: "Marco's Homelab - Readeck <do-not-reply@mail.cloud.blacksd.tech>"
+            - name: READECK_MAIL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-creds
+                  key: username
+            - name: READECK_MAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-creds
+                  key: password

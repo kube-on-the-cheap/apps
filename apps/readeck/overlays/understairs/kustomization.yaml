@@ -5,3 +5,10 @@ resources:
   - pvc-data.yaml
   - httproute.yaml
   - backendtrafficpolicy.yaml
+  - cluster.cnpg.yaml
+  - smtp-creds.externalsecret.yaml
+patches:
+  - path: deployment.patch.yaml
+    target:
+      kind: Deployment
+      name: readeck
