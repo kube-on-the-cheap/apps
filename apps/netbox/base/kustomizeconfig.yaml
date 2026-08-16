@@ -1,0 +1,11 @@
+---
+# The `spec/values/extraConfig[]/configMap/name` path is intentionally
+# NOT listed here even though the chart references a ConfigMap by name
+# there: kustomize v5.7.0 doesn't traverse into that nested list to
+# rewrite name references. The overlay works around this by pinning
+# the OIDC ConfigMap name with `disableNameSuffixHash: true`.
+nameReference:
+  - kind: ConfigMap
+    fieldSpecs:
+      - path: spec/valuesFrom/name
+        kind: HelmRelease

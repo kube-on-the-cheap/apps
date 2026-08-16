@@ -1,0 +1,30 @@
+# Chart default image ships NetBox v4.6.8 for chart v8.3.55.
+image:
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+worker:
+  replicaCount: 1
+
+housekeeping:
+  enabled: true
+
+# Disable bundled subcharts — bring your own PG + Redis.
+postgresql:
+  enabled: false
+valkey:
+  enabled: false
+
+# Ingress off — we use our own HTTPRoute (Envoy Gateway).
+ingress:
+  enabled: false
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+
+# Chart auto-generates a NetBox SECRET_KEY into a Secret if not
+# provided. We inject our own via extraEnvs in the overlay to keep the
+# key managed by External Secrets.
+existingSecret: ""

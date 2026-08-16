@@ -8,6 +8,7 @@ resources:
   - linkwarden.yaml
   - mindwtr.yaml
   - minecraft-bedrock.yaml
+  - netbox.yaml
   - open-webui.yaml
   - paperless-ngx.yaml
   - reactive-resume.yaml

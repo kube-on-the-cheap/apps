@@ -1,0 +1,15 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: netbox-timeouts
+  namespace: netbox
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: netbox
+  timeout:
+    http:
+      requestTimeout: 120s
+      connectionIdleTimeout: 5m
