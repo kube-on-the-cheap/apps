@@ -18,6 +18,10 @@
         href: https://bookmarks.homelab.blacksd.tech
         description: Bookmark manager
         icon: linkwarden.svg
+    - NetBox:
+        href: https://netbox.homelab.blacksd.tech
+        description: IPAM and DCIM
+        icon: netbox.svg
     - Open WebUI:
         href: https://ai.homelab.blacksd.tech
         description: Chat + LLM API router
