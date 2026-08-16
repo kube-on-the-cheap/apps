@@ -1,0 +1,30 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: netbox
+  namespace: flux-system
+spec:
+  interval: 30m
+  timeout: 15m
+  releaseName: netbox
+  targetNamespace: netbox
+  chart:
+    spec:
+      chart: netbox
+      version: "8.3.55"
+      sourceRef:
+        kind: HelmRepository
+        name: netbox
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  driftDetection:
+    mode: enabled
+  valuesFrom:
+    - kind: ConfigMap
+      name: netbox-values
+      valuesKey: values.yaml

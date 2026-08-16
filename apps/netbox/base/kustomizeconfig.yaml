@@ -1,0 +1,8 @@
+---
+nameReference:
+  - kind: ConfigMap
+    fieldSpecs:
+      - path: spec/valuesFrom/name
+        kind: HelmRelease
+      - path: spec/values/extraConfig[]/configMap/name
+        kind: HelmRelease
