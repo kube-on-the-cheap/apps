@@ -71,46 +71,23 @@ spec:
     allowedHosts:
       - netbox.homelab.blacksd.tech
 
-    # No auto-generated superuser — Authentik provides the first
-    # admin via the SOCIAL_AUTH_PIPELINE step in oidc-config.py.
-    superuser:
-      email: ""
-      password: ""
-
-    # Env var names must match netbox-docker's configuration.py which
-    # reads them into Django settings verbatim (SOCIAL_AUTH_OIDC_KEY,
-    # SOCIAL_AUTH_OIDC_SECRET, SECRET_KEY — no NETBOX_ prefix).
-    extraEnvs:
-      - name: SOCIAL_AUTH_OIDC_KEY
-        valueFrom:
-          secretKeyRef:
-            name: netbox-oidc
-            key: OIDC_CLIENT_ID
-      - name: SOCIAL_AUTH_OIDC_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: netbox-oidc
-            key: OIDC_CLIENT_SECRET
-      - name: SECRET_KEY
-        valueFrom:
-          secretKeyRef:
-            name: netbox-secret-key
-            key: password
-
     remoteAuth:
       enabled: true
       backend: social_core.backends.open_id_connect.OpenIdConnectAuth
 
-    # extraConfig[].values are the only chart-supported way to inject
-    # extra settings into configuration.py — the entrypoint parses the
-    # mounted YAML into a dict and writes `KEY = value` scalar
-    # assignments. This means we can only ship SCALAR OIDC settings
-    # here; Python code (function definitions, tuples) can't be
-    # expressed. Group->role sync via a custom SOCIAL_AUTH_PIPELINE
-    # step is not viable through this mechanism — see the netbox
-    # memory note. Superusers are promoted manually via
-    # `kubectl exec deploy/netbox -- ./manage.py createsuperuser`
-    # or an ORM one-liner after first OIDC login.
+    # netbox-docker's configuration.py reads OIDC credentials from
+    # FILES under /run/config/extra/<N>/, not from env vars. So we
+    # inject them via two extraConfig entries:
+    #   [0] .values — non-secret OIDC settings (issuer, scope, flags).
+    #   [1] .secret — mounts the SOPS-decrypted `netbox-oidc` Secret,
+    #       whose `oidc.yaml` key holds SOCIAL_AUTH_OIDC_KEY and
+    #       SOCIAL_AUTH_OIDC_SECRET as YAML scalars. Chart's
+    #       configuration.py deep-merges those into globals().
+    #
+    # Note: no auto-role-sync — the chart cannot inject a custom
+    # SOCIAL_AUTH_PIPELINE step through this mechanism (it accepts only
+    # scalar YAML). Superusers are promoted manually via
+    # `kubectl exec deploy/netbox -- ./manage.py createsuperuser`.
     extraConfig:
       - values:
           REMOTE_AUTH_ENABLED: true
@@ -122,3 +99,5 @@ spec:
             - email
             - profile
           SOCIAL_AUTH_REDIRECT_IS_HTTPS: true
+      - secret:
+          secretName: netbox-oidc
