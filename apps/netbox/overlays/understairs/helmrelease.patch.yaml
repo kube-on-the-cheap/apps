@@ -1,0 +1,107 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: netbox
+spec:
+  values:
+    externalDatabase:
+      host: netbox-pg-rw
+      port: 5432
+      database: netbox
+      username: netbox
+      existingSecretName: netbox-pg-app
+      # CNPG's <cluster>-app Secret uses `password` (see the
+      # cnpg-database-cr memory note); overrides the chart default of
+      # `postgresql-password`.
+      existingSecretKey: password
+
+    tasksDatabase:
+      host: netbox-redis-queue
+      port: 6379
+      database: 0
+      existingSecretName: netbox-redis-queue-password
+      # Chart default is `tasks-password`; ESO-generated Secrets use
+      # `password`.
+      existingSecretKey: password
+
+    cachingDatabase:
+      host: netbox-redis-cache
+      port: 6379
+      database: 1
+      existingSecretName: netbox-redis-cache-password
+      # Chart default is `cache-password`; ESO-generated Secrets use
+      # `password`.
+      existingSecretKey: password
+
+    persistence:
+      storageClass: openebs-rawfile
+      size: 5Gi
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1Gi
+
+    # Pin all NetBox pods (web, worker, housekeeping CronJob) to the
+    # amd64 mini-PC. Same escape hatch as Open WebUI / Linkwarden.
+    # openebs-rawfile is node-local so this doesn't restrict scheduling
+    # any further than reality already does.
+    nodeSelector:
+      kubernetes.io/hostname: minipc1
+
+    worker:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 384Mi
+        limits:
+          cpu: 500m
+          memory: 768Mi
+      nodeSelector:
+        kubernetes.io/hostname: minipc1
+
+    housekeeping:
+      nodeSelector:
+        kubernetes.io/hostname: minipc1
+
+    allowedHosts:
+      - netbox.homelab.blacksd.tech
+
+    # No auto-generated superuser — Authentik provides the first
+    # admin via the SOCIAL_AUTH_PIPELINE step in oidc-config.py.
+    superuser:
+      email: ""
+      password: ""
+
+    extraEnvs:
+      - name: OIDC_CLIENT_ID
+        valueFrom:
+          secretKeyRef:
+            name: netbox-oidc
+            key: OIDC_CLIENT_ID
+      - name: OIDC_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: netbox-oidc
+            key: OIDC_CLIENT_SECRET
+      - name: SECRET_KEY
+        valueFrom:
+          secretKeyRef:
+            name: netbox-secret-key
+            key: password
+
+    remoteAuth:
+      enabled: true
+      backend: social_core.backends.open_id_connect.OpenIdConnectAuth
+
+    # See apps/netbox/overlays/understairs/oidc-config.py — that
+    # file's contents are appended to NetBox's configuration.py.
+    # nameReference in base/kustomizeconfig.yaml rewrites the ConfigMap
+    # name here to the hash-suffixed one produced by configMapGenerator.
+    extraConfig:
+      - configMap:
+          name: netbox-oidc-config
