@@ -77,13 +77,16 @@ spec:
       email: ""
       password: ""
 
+    # Env var names must match netbox-docker's configuration.py which
+    # reads them into Django settings verbatim (SOCIAL_AUTH_OIDC_KEY,
+    # SOCIAL_AUTH_OIDC_SECRET, SECRET_KEY — no NETBOX_ prefix).
     extraEnvs:
-      - name: OIDC_CLIENT_ID
+      - name: SOCIAL_AUTH_OIDC_KEY
         valueFrom:
           secretKeyRef:
             name: netbox-oidc
             key: OIDC_CLIENT_ID
-      - name: OIDC_CLIENT_SECRET
+      - name: SOCIAL_AUTH_OIDC_SECRET
         valueFrom:
           secretKeyRef:
             name: netbox-oidc
@@ -98,10 +101,24 @@ spec:
       enabled: true
       backend: social_core.backends.open_id_connect.OpenIdConnectAuth
 
-    # See apps/netbox/overlays/understairs/oidc-config.py — that
-    # file's contents are appended to NetBox's configuration.py.
-    # nameReference in base/kustomizeconfig.yaml rewrites the ConfigMap
-    # name here to the hash-suffixed one produced by configMapGenerator.
+    # extraConfig[].values are the only chart-supported way to inject
+    # extra settings into configuration.py — the entrypoint parses the
+    # mounted YAML into a dict and writes `KEY = value` scalar
+    # assignments. This means we can only ship SCALAR OIDC settings
+    # here; Python code (function definitions, tuples) can't be
+    # expressed. Group->role sync via a custom SOCIAL_AUTH_PIPELINE
+    # step is not viable through this mechanism — see the netbox
+    # memory note. Superusers are promoted manually via
+    # `kubectl exec deploy/netbox -- ./manage.py createsuperuser`
+    # or an ORM one-liner after first OIDC login.
     extraConfig:
-      - configMap:
-          name: netbox-oidc-config
+      - values:
+          REMOTE_AUTH_ENABLED: true
+          REMOTE_AUTH_BACKEND: social_core.backends.open_id_connect.OpenIdConnectAuth
+          SOCIAL_AUTH_OIDC_OIDC_ENDPOINT: https://auth.cloud.blacksd.tech/application/o/netbox
+          # Standard scopes; NO `groups` since we don't sync roles.
+          SOCIAL_AUTH_OIDC_SCOPE:
+            - openid
+            - email
+            - profile
+          SOCIAL_AUTH_REDIRECT_IS_HTTPS: true

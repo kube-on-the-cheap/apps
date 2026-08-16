@@ -9,26 +9,6 @@ resources:
   - secrets.sops.yaml
   - httproute.yaml
   - backendtrafficpolicy.yaml
-configMapGenerator:
-  # The chart mounts extraConfig[].configMap entries at
-  # /run/config/extra/<i>/ and picks up *.yaml files there. The source
-  # is `.py` locally (so pre-commit's check-yaml doesn't reject Python
-  # content); the `oidc-config.yaml=oidc-config.py` mapping preserves
-  # the `.yaml` key inside the ConfigMap the chart consumes.
-  #
-  # disableNameSuffixHash: kustomize's nameReference rules can't
-  # traverse into HelmRelease spec.values.extraConfig[].configMap.name
-  # (kustomize v5.7.0 with the `[]` suffix silently no-ops on this
-  # nested-list path). Rather than fight it, we pin the ConfigMap
-  # name — config edits won't cache-bust the pod, but this file
-  # changes rarely and a manual `kubectl rollout restart deploy/netbox`
-  # handles the rare update.
-  - name: netbox-oidc-config
-    namespace: netbox
-    files:
-      - oidc-config.yaml=oidc-config.py
-    options:
-      disableNameSuffixHash: true
 patches:
   - path: helmrelease.patch.yaml
     target:
