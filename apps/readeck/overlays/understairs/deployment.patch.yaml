@@ -10,11 +10,36 @@ spec:
       containers:
         - name: readeck
           env:
-            - name: READECK_DATABASE_SOURCE
+            # Readeck's DSN parser only accepts the postgres:// scheme,
+            # but CNPG's uri key uses postgresql://. Assemble the DSN
+            # from the individual fields instead of using uri directly.
+            - name: READECK_DB_USER
               valueFrom:
                 secretKeyRef:
                   name: readeck-pg-app
-                  key: uri
+                  key: username
+            - name: READECK_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: readeck-pg-app
+                  key: password
+            - name: READECK_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: readeck-pg-app
+                  key: host
+            - name: READECK_DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: readeck-pg-app
+                  key: port
+            - name: READECK_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: readeck-pg-app
+                  key: dbname
+            - name: READECK_DATABASE_SOURCE
+              value: "postgres://$(READECK_DB_USER):$(READECK_DB_PASSWORD)@$(READECK_DB_HOST):$(READECK_DB_PORT)/$(READECK_DB_NAME)"
             # Env prefix is READECK_MAIL_*, not READECK_EMAIL_* — the TOML
             # section is [email] but the env vars use MAIL_. Upstream
             # asymmetry, confirmed in configs/configs.go.
