@@ -1,0 +1,115 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: sparkyfitness
+spec:
+  values:
+    # External Postgres — chart-managed HelmForge subchart is disabled
+    # in base values. CNPG's <cluster>-app Secret exposes username /
+    # password / host / port / dbname; we hand-map the two fields the
+    # chart consumes.
+    externalDatabase:
+      host: sparkyfitness-pg-rw
+      port: 5432
+      database: sparkyfitness
+      # Chart derives the owner username from
+      # externalDatabase.auth.existingSecret's `username` key when
+      # existingSecretKeys.username is set. CNPG's -app Secret uses
+      # the same key name — no override needed on the key itself, but
+      # the wire is explicit for clarity.
+      auth:
+        existingSecret: sparkyfitness-pg-app
+        existingSecretKeys:
+          username: username
+          password: password
+
+    # Limited-privilege app DB user. Chart auto-creates this role on
+    # first boot using the DB owner's CREATEROLE grant (granted
+    # manually per docs — see rollout runbook).
+    server:
+      appDatabase:
+        existingSecret: sparkyfitness-appdb
+        existingSecretKeys:
+          username: username
+          password: password
+      secrets:
+        existingSecret: sparkyfitness-app
+        existingSecretKeys:
+          apiEncryptionKey: api_encryption_key
+          betterAuthSecret: better_auth_secret
+
+      # Chart-managed uploads PVC — user profile pictures + exercise
+      # icons only. Chart default is 10 Gi; 2 Gi is plenty for a family
+      # deployment.
+      persistence:
+        uploads:
+          size: 2Gi
+
+      # Server resources — Node.js API, low idle footprint. Bump limits
+      # after monitoring if reports/backfills push memory.
+      resources:
+        requests:
+          cpu: 50m
+          memory: 192Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+    frontend:
+      resources:
+        requests:
+          cpu: 25m
+          memory: 32Mi
+        limits:
+          cpu: 200m
+          memory: 96Mi
+
+    config:
+      frontendUrl: https://fitness.homelab.blacksd.tech
+      extraTrustedOrigins: https://fitness.homelab.blacksd.tech
+
+      oidc:
+        enabled: true
+        # `providerSlug` is load-bearing: it becomes the `providerId` in
+        # the Better Auth SSO plugin's callback path
+        # (/api/auth/sso/callback/<providerSlug>). Must match the
+        # trailing segment of allowed_redirect_uris in
+        # configs/authentik/module/sparkyfitness.tf (currently
+        # `authentik`) or the authorize step returns "redirect_uri
+        # mismatch".
+        providerSlug: authentik
+        providerName: "Authentik"
+        # Trailing slash matters — SparkyFitness's OIDC client library
+        # concatenates '/.well-known/openid-configuration' onto this
+        # value without normalising.
+        issuerUrl: "https://auth.cloud.blacksd.tech/application/o/sparkyfitness/"
+        # Include the `groups` scope so the admin-group claim reaches
+        # the app. Corresponding property mapping is
+        # authentik_property_mapping_provider_scope.sparkyfitness_groups
+        # in configs/authentik/module/sparkyfitness.tf.
+        scope: "openid email profile groups"
+        autoRegister: true
+        # Fail-safe: keep the email/password login form visible during
+        # initial bring-up. Flip to true (with forceEmailLogin: false)
+        # in a follow-up commit once OIDC is confirmed working.
+        autoRedirect: false
+        adminGroup: admins
+        secrets:
+          existingSecret: sparkyfitness-oidc
+          existingSecretKeys:
+            clientId: client_id
+            clientSecret: client_secret
+
+      email:
+        enabled: true
+        host: smtp.email.eu-frankfurt-1.oci.oraclecloud.com
+        port: 587
+        # STARTTLS on 587 — same wiring as Readeck / Psono / etc.
+        secure: false
+        from: "Marco's Homelab - SparkyFitness <do-not-reply@mail.cloud.blacksd.tech>"
+        secrets:
+          existingSecret: smtp-creds
+          existingSecretKeys:
+            username: username
+            password: password
