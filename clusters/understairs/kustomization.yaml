@@ -13,4 +13,5 @@ resources:
   - paperless-ngx.yaml
   - reactive-resume.yaml
   - readeck.yaml
+  - sparkyfitness.yaml
   - vaultwarden.yaml
