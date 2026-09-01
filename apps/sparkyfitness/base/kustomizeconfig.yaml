@@ -1,0 +1,9 @@
+---
+# Rewrites the ConfigMap name (with kustomize's hash suffix) inside
+# HelmRelease.spec.valuesFrom[].name so the HelmRelease always
+# references the current generated ConfigMap. Same pattern as NetBox.
+nameReference:
+  - kind: ConfigMap
+    fieldSpecs:
+      - path: spec/valuesFrom/name
+        kind: HelmRelease
