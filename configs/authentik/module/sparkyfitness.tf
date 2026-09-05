@@ -35,11 +35,10 @@ resource "authentik_provider_oauth2" "sparkyfitness" {
   # Callback path per Better Auth SSO plugin
   # (SparkyFitnessServer/auth.ts: `basePath: '/api/auth'` +
   # `SSO callback paths are /sso/callback/[providerId]`). `providerId`
-  # comes from SPARKY_FITNESS_OIDC_PROVIDER_SLUG in the app env — must
-  # stay in sync with the HelmRelease overlay patch (Task 5+).
-  # Verified before apply — if the slug changes, this URI must be
-  # updated first or the authorize step returns "redirect_uri
-  # mismatch".
+  # comes from SPARKY_FITNESS_OIDC_PROVIDER_SLUG in the app env — the
+  # trailing `authentik` segment of the URL below must equal
+  # `config.oidc.providerSlug` in the app's HelmRelease values, or the
+  # authorize step returns "redirect_uri mismatch".
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
