@@ -1,0 +1,11 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: mealie
+  namespace: flux-system
+spec:
+  interval: 24h
+  url: oci://ghcr.io/jvalskis/mealie-helm/mealie
+  ref:
+    tag: "3.0.5"
