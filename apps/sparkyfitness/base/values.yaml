@@ -48,8 +48,13 @@ config:
   nodeEnv: production
   timezone: Europe/Rome
   logLevel: info
-  # Family-only deployment; new users join via OIDC auto-register.
-  disableSignup: true
+  # Signups must be ENABLED when using OIDC auto-register — Better Auth's
+  # SSO auto-provisioning path is subject to the same
+  # `Signups are currently disabled by the administrator` gate as the
+  # local email/password form. Family-only access is enforced by the
+  # Authentik `grownups` policy binding upstream, not by this flag.
+  # (`disableEmailLogin` hides the local register form; see below.)
+  disableSignup: false
   # Fail-safe against OIDC lockout — keep email/password login
   # available during initial bring-up. Flip to false in a follow-up
   # commit once OIDC is confirmed working end-to-end.
