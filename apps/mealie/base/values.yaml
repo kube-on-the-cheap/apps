@@ -1,0 +1,55 @@
+# Cluster-agnostic defaults. Cluster-specific env overrides
+# (BASE_URL, OIDC issuer URL, SMTP host, POSTGRES_SERVER, node pin,
+# startup probe) live in overlays/<cluster>/helmrelease.patch.yaml
+# and merge via bjw-s common lib's env-map deep-merge (by var name).
+
+controllers:
+  main:
+    strategy:
+      # RWO PVC on openebs-rawfile — RollingUpdate would deadlock on
+      # the volume attachment.
+      type: Recreate
+    containers:
+      main:
+        image:
+          # Chart's Chart.yaml appVersion is v3.23.1 (chart 3.0.5,
+          # published Aug 2026), but upstream Mealie is at v3.25.1
+          # (Sep 2026). Pin the tag explicitly to skip the chart's
+          # appVersion fallback. Same pattern as the SparkyFitness
+          # chart-tag override.
+          tag: "v3.25.1"
+        env:
+          TZ: Europe/Rome
+          LOG_LEVEL: info
+          # Family-only deployment; the only way in is via Authentik
+          # `grownups` binding. Mealie's ALLOW_SIGNUP is orthogonal to
+          # OIDC_SIGNUP_ENABLED (which stays true by default), so this
+          # doesn't block OIDC auto-provisioning — unlike SparkyFitness.
+          ALLOW_SIGNUP: "false"
+          # Hide the local email/password form; OIDC-only from day one.
+          # Escape hatch: append `?direct=1` to /login to reveal the
+          # form if OIDC ever breaks.
+          ALLOW_PASSWORD_LOGIN: "false"
+
+# We manage our own CNPG cluster in the overlay — disable both the
+# chart's bundled Bitnami subchart AND the cluster subchart. When both
+# are off, the chart's dbEngine helper returns "sqlite" and
+# postgresServer returns empty; the overlay patch overrides via
+# explicit env values (DB_ENGINE=postgres, POSTGRES_SERVER=mealie-pg-rw).
+postgresql:
+  enabled: false
+cluster:
+  enabled: false
+
+persistence:
+  data:
+    # Chart default is 10 Gi; 5 Gi is plenty for a family recipe
+    # library (recipe images are a few hundred KB each). openebs-rawfile
+    # matches every other app-owned PVC on understairs.
+    size: 5Gi
+    storageClass: openebs-rawfile
+
+# HTTPRoute is managed by the overlay so hostname stays cluster-scoped.
+ingress:
+  main:
+    enabled: false
