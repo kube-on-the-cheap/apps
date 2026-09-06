@@ -1,0 +1,67 @@
+# Cluster-agnostic defaults. Cluster-specific overrides
+# (externalDatabase, OIDC / SMTP secret wires, hostname) live in
+# overlays/<cluster>/helmrelease.patch.yaml.
+
+global:
+  # Chart's server/frontend image repositories are hyphenated
+  # (codewithcj/sparkyfitness-server, codewithcj/sparkyfitness-frontend)
+  # and hosted on GHCR. Default image references resolve as
+  # ghcr.io/codewithcj/sparkyfitness-{server,frontend}:<tag>.
+  imageRegistry: ghcr.io
+  storageClass: openebs-rawfile
+
+# App version pin — chart's Chart.yaml still declares
+# appVersion: v0.16.6.1 but the latest published images are v0.17.3
+# (Jul 2026). Override tag on both components to skip the appVersion
+# fallback in the chart's image helper.
+server:
+  image:
+    tag: "v0.17.3"
+frontend:
+  image:
+    tag: "v0.17.3"
+
+# We manage our own CNPG cluster in the overlay — disable the bundled
+# HelmForge postgresql subchart and the chart's built-in databaseBackup
+# CronJob (CNPG handles Postgres persistence directly).
+postgresql:
+  enabled: false
+databaseBackup:
+  enabled: false
+
+# The frontend image's nginx already proxies /api, /uploads, /mcp, and
+# /health-data to the server service, so a single "/" rule to the
+# frontend Service is enough. HTTPRoute is managed by the overlay so
+# hostname stays cluster-scoped.
+ingress:
+  enabled: false
+httpRoute:
+  enabled: false
+
+# Platform handles egress policy separately (Cilium NetworkPolicies at
+# the cluster level). Do not let the chart create per-pod
+# NetworkPolicies with permissive fallbacks.
+networkPolicy:
+  enabled: false
+
+config:
+  nodeEnv: production
+  timezone: Europe/Rome
+  logLevel: info
+  # Family-only deployment; new users join via OIDC auto-register.
+  disableSignup: true
+  # Fail-safe against OIDC lockout — keep email/password login
+  # available during initial bring-up. Flip to false in a follow-up
+  # commit once OIDC is confirmed working end-to-end.
+  forceEmailLogin: true
+  adminEmail: marco.bulgarini@hivemq.com
+  allowPrivateNetworkCors: false
+  extraTrustedOrigins: ""
+  # OIDC and SMTP feature flags are enabled in the overlay patch (keeps
+  # the issuer URL and SMTP host out of base values — cluster-specific).
+  oidc:
+    enabled: false
+  email:
+    enabled: false
+  garmin:
+    enabled: false

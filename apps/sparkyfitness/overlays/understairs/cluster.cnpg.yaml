@@ -1,0 +1,38 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: sparkyfitness-pg
+  namespace: sparkyfitness
+spec:
+  instances: 1
+
+  # Repo standard — same 16.2 pin as Readeck, NetBox, Ghostfolio.
+  # SparkyFitness migrations use standard SQL; no PG18-only features.
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.2
+
+  storage:
+    storageClass: openebs-rawfile
+    size: 2Gi
+
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+      cpu: 250m
+
+  bootstrap:
+    initdb:
+      database: sparkyfitness
+      owner: sparky_admin
+
+  postgresql:
+    parameters:
+      max_worker_processes: "4"
+      max_parallel_workers: "2"
+      max_replication_slots: "8"
+      max_slot_wal_keep_size: "512MB"
+
+  priorityClassName: system-cluster-critical
