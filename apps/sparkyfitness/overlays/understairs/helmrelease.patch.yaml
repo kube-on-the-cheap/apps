@@ -110,10 +110,11 @@ spec:
         # in configs/authentik/module/sparkyfitness.tf.
         scope: "openid email profile groups"
         autoRegister: true
-        # Fail-safe: keep the email/password login form visible during
-        # initial bring-up. Flip to true (with forceEmailLogin: false)
-        # in a follow-up commit once OIDC is confirmed working.
-        autoRedirect: false
+        # OIDC verified end-to-end — skip the local /login page entirely
+        # and bounce straight to Authentik. Combined with
+        # disableEmailLogin: true in base values, the only way in is via
+        # the grownups group binding upstream.
+        autoRedirect: true
         adminGroup: admins
         secrets:
           existingSecret: sparkyfitness-oidc
