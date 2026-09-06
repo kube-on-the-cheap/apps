@@ -56,6 +56,24 @@ spec:
           cpu: 500m
           memory: 512Mi
 
+      # Pin to the amd64 mini-PC. Same escape hatch as Reactive Resume,
+      # Linkwarden, NetBox. First-boot on the arm64 pi1 stalled through
+      # the liveness threshold (30s + 5x10s = 80s) while running DB
+      # migrations; minipc1 clears the same work in seconds.
+      nodeSelector:
+        kubernetes.io/hostname: minipc1
+
+      # Add a startup probe so slow first-boot migrations don't get
+      # killed by liveness. Chart default liveness (30s + 5x10s = 80s)
+      # is tight even on amd64. 60 tries * 5s = 5 min ceiling before
+      # liveness kicks in.
+      startupProbe:
+        httpGet:
+          path: /api/health
+          port: http
+        periodSeconds: 5
+        failureThreshold: 60
+
     frontend:
       resources:
         requests:
@@ -64,6 +82,8 @@ spec:
         limits:
           cpu: 200m
           memory: 96Mi
+      nodeSelector:
+        kubernetes.io/hostname: minipc1
 
     config:
       frontendUrl: https://fitness.homelab.blacksd.tech
