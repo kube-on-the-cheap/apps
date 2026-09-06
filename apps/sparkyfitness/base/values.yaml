@@ -55,10 +55,14 @@ config:
   # Authentik `grownups` policy binding upstream, not by this flag.
   # (`disableEmailLogin` hides the local register form; see below.)
   disableSignup: false
-  # Fail-safe against OIDC lockout — keep email/password login
-  # available during initial bring-up. Flip to false in a follow-up
-  # commit once OIDC is confirmed working end-to-end.
-  forceEmailLogin: true
+  # OIDC verified end-to-end — email/password login is now hidden.
+  # The `disableEmailLogin` flag below is what removes the local
+  # register/login form; `forceEmailLogin` would override it, so it
+  # must stay off. In-cluster escape hatch if OIDC ever breaks: set
+  # `forceEmailLogin: true` here or exec into the server pod and reset
+  # the setting via the admin settings endpoint.
+  forceEmailLogin: false
+  disableEmailLogin: true
   adminEmail: marco.bulgarini@hivemq.com
   allowPrivateNetworkCors: false
   extraTrustedOrigins: ""
