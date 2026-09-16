@@ -8,59 +8,61 @@ type: Opaque
 # `-marco` nameSuffix, which rewrites the Deployment's Secret ref
 # to `mindwtr-auth-token-marco`).
 #
-# Value carried over from the pre-tenancy shared Secret, so no
-# client-side reconfiguration is needed on this device — same token
-# was already pasted into the PWA + mobile/desktop apps.
+# The value below is a PLAINTEXT PLACEHOLDER — replace with your
+# memorable token, then re-encrypt in place with:
+#   sops -e -i apps/mindwtr/overlays/understairs/tenants/marco/auth-token.sops.yaml
+# The path matches `.sops.yaml`'s understairs rule, so the correct
+# recipients (understairs cluster age key + Marco PGP + age backup)
+# are picked up automatically.
 #
-# Generate a fresh token with:
-#   openssl rand -hex 32
-# Rotating means editing this file, re-encrypting, letting Flux
-# reconcile, then updating every client that used the old value.
+# After encrypting and letting Flux reconcile, paste the same value
+# into every Mindwtr client (PWA settings, mobile app, desktop app)
+# that syncs against this tenant.
 stringData:
-  MINDWTR_CLOUD_AUTH_TOKENS: ENC[AES256_GCM,data:s+kQdh3YK1kA/nOuv1I4wz7HN9THxiQ5KhmdHwpWXk7ra+NFzqC3zwQod+1ZKsrSu7lpAtoBOMySUVAZaiotUw==,iv:YSyywx51nr7oDS/eA9ynMk2Y5HryH3jOWsr/1tlbvv0=,tag:A+MtB+zn6LpYpziqCmYK9g==,type:str]
+  MINDWTR_CLOUD_AUTH_TOKENS: ENC[AES256_GCM,data:OjFTzoApRart0Zc8W4vG+Q==,iv:PIydgG+qwXTYyo5fMEP9pVH/Gw/kksvJDzyXRnHIobs=,tag:JNNkT+jg9MT5YeL3yetXYw==,type:str]
 sops:
   age:
     - enc: |
         -----BEGIN AGE ENCRYPTED FILE-----
-        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOd242c1IxbTNPbEM2b0xh
-        V01kRDk3ZkFERU1BWTVhMVZhQ011RGR2bFQ4Cmhwd29Mc3dyQmk4aG8vUndVbHRq
-        R2k1YUdIS2dHRWVpMGtEK1ZKQTJQM0kKLS0tIHdOdjVHYXlCbFNXc3RhTE50U0pE
-        YmZFcWtVaklvU3BjeVNUNlJZL0YxQnMKClYggKuiXXd80wsJ8q9i4JxUt1TtLUHa
-        whzyv2NTShEz3DoKVJVj5hTJGHM1TAkdVk2lMhafRpnOBRjVt/kdVw==
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBXNFdFSGZlZUNJbHpSb3dW
+        NkMwVGhINlJkMHZOdlg0TTlyVFBVS094eDBrCnJZcFhBY253d0NHRFJxMklSNGI3
+        OWd1T1FQRzUvUGhjSm54TW1RbGFieEEKLS0tIFYyRHU5cHBCM3E4enpOVzJCT2Z2
+        cHA1ak9IcG5CYWY5UFFYTG9PVUhkeG8KHabwf247gZWcSJ54TnQZ4yq/gRmpJtKP
+        TyPFuSReUZ8JIx0XQpu9NvcSvUFky40ZSJeSlGiXS7z24j2gngDY2g==
         -----END AGE ENCRYPTED FILE-----
       recipient: age1rqldalz0wppytnn5qzkms98awx43u2kkea878wslktyu6sjrq35sfzktv4
     - enc: |
         -----BEGIN AGE ENCRYPTED FILE-----
-        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBrdFhMUHRyWldkUGZBaThy
-        bFpTdVQwY3ZYTFRndUo5UzFNT0lUM21wMGdrCldSNHl1YlI0RC9oYU0wa1Arcjdh
-        TzgvbkhaSlowQkNwZ21SMW41NzNtd3cKLS0tIDltbmpSdU1rM1kwU0VqUmljQi8v
-        RlAxYmE5aVZxV2JuRDJ1b3VlaHpFdVUKyapUjx7XUUj1c/5ozFKuzfMJn8V1d4I/
-        XzXLR/RZxJ7IytYT1M8naetFEaWjGqub/j/j/RGLR4kkmvQ1aFlpMQ==
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBiMENIelVPYlBZYU1lNjh4
+        Rk1Felh1VHV3SFZtenYxK210cHhFZytMVWlBCkpqMjF4YStYQ01kWGF2RmMwQjk4
+        U2FvK1VWSE10T2d6QW5EdXI3R25nU2MKLS0tIEJGaThyS2hyRi80S2hzQ3FHV0Uy
+        aHBpTFJ2aWdtWklyS0JQV1RvMmw1aUUKgT3jCKY0BnxIakxcyy1BxQdZaZy3sQKP
+        sZkAMoAEt0rJSSk0TxGK6mQREHTarOJAM5FLOg5tgNfx0jXBv5dhBw==
         -----END AGE ENCRYPTED FILE-----
       recipient: age1k9pgstv92fnq4mpupu2msd9j7zvv96l07ueqfckrv3nwq94t7vzq7typqx
   encrypted_regex: ^(data|stringData)$
-  lastmodified: "2026-08-08T09:42:50Z"
-  mac: ENC[AES256_GCM,data:CnJGAcWAsX/94QbsSeohjxDPN+3iX7FC4qzpwE7pO0K/+CaHhIyMJjN2LCgnbOGHF8bRabwGtcc8CleCMSJB7KfTivvAK/QwGdu4sb8zGnlMMfKQyUyqqB/gwG+XYjijbYQMVc9kJAWnN0YJFEcO9xhQW68Jlh7j6XW5Lu+k5tg=,iv:XOh4BS+buSnXzFHH2Eg+eLx5nVQybVYshHxWU/i0u/4=,tag:MNaGMZbT42RqtYwmhCoG6A==,type:str]
+  lastmodified: "2026-09-16T13:29:54Z"
+  mac: ENC[AES256_GCM,data:bSWwVZUc/uJ4gcxb9rCVN7Sq0zogdzQW3c6oDi6OkimET0AC/OUIFnxCfyuvlv9vn4hM1nC32sLX4Y+9dAsLHz/9sTJ7tNhls7yYKDZCJ+mb1ehMeIy9eZGWyFTBNqCOtn8DGDTu401RqI8KKLvBZc4dPiS7gYcY57SkI3EdWo8=,iv:LK53i4minkbt1JbIDmvOf0DpiUvUJOOihUNMTe0R5Wo=,tag:ehCskvDkXZ2UXZc4T93qaQ==,type:str]
   mac_only_encrypted: true
   pgp:
-    - created_at: "2026-08-08T09:42:50Z"
+    - created_at: "2026-09-16T13:29:17Z"
       enc: |-
         -----BEGIN PGP MESSAGE-----
 
-        hQIMA7McDQbiwetaAQ/8DDfnuJUcoA0b/7Afv2zLBgp5efac/IbcYXGqCI6PDHk+
-        EkP7ra0scRt5TrwyjOzOgvVBukJiYkEIUFarZTvphmNtCf7H4ALrpu238zuyuLw9
-        PLLUV/U/jV50Z9bwqLdTPw//NyJZLNjIoPMee02fEMw+iFCU6nEXnTvzCA3t1VGH
-        AcllOwmxIYeyZGN+wgmG+Cvvw8bL4bzYEOgLWULdI71YpntzoysHWmdxHgirDUKi
-        46M059t/Dw3o3RHtMf/xFstrYdnsrF/xe0EjniuTKi3hSql2IHWRk3bzFurVkgdZ
-        +yeFP0hJM87kcVU+2MrAubYdGQb3Imjh21ZSoNT3Pqb83VdtE79Vt1VJvmvkUsBv
-        xdn8TCSqK2XLJso91FsV5pKt6RIb6nvDWWfNkvq53LOu75RvH8vT5Zqmu5bX26ma
-        HFNrO3ooLQvDqyXjD58HTgYlPbAjSFQtrHxiUOU5g40AdBADl7EMg2LmQ5Nxl6Aa
-        FVdL/gR0qkAmnPRV1KMu5RPAJt4vNI5Dr3A7qCuhZZg8VbGMyWgWmYhYpWFVsB0D
-        wl7CtFVhbqS8AL21l0Zw9VqeJy/P70Szf90I5x3Up8mUllYWUxdWp3tEnJL1SX2f
-        C9JEHQBZWDDqSjUCh3pKYyBKy6BfCnV7RSkZYNLSrWSDuBomgJ+nJL7PL+VAUG3S
-        XgFSfnuSzUzNs4TEEVJq5Xkh9bpl2idg89xCZyVbnqLFQ231W0zZGs2ahJn7PKEi
-        akCGGK6cl2ArQCfWMPu+W4JmhK+cbUmSjwnRFZa1H1f5oSJtodaU4o4QiExV2sQ=
-        =ypuh
+        hQIMA7McDQbiwetaAQ/+J2hkHIAM9597VI/ismuVaRSMZ3JEgdv6XN5uGPpRJSSo
+        tTFcPMWcKT5E/1xtTVh7gb91bGWwqDlsTJ+lSRaYFaupFCH5/PzW4kF41u1K3dGR
+        +1bvXsOWOKeb5pvpv++rMngQ2QDuizxixRrGuQorB+LtfId5ljQfuZN0QLer+mHF
+        mbfr1VP/p7Q5WlkxlvgOBKZMuM9FkHOdF0vRxxgs6BdvGnRvevmbIYB1vsu3rM0n
+        hXS3f251ALzhGL3PDOyqfaM1xWCAGKnJPglZqGLqt42hpw+b+FARvGfmiTs+kN2d
+        U5tcX2MyXxIUYLWbcP4XRFWDW38kDcocBITSdPYO2I3cEc6ReBqrN7kAAdA+u4ei
+        S2cLYCaMk4AGn+p59wGkqlN6ijjRVP3XLOTXCqcJ5rrNYBWF8cMvOKDmYo1cKBTL
+        L6MyIQbWINI8VqkcV/1rTitArB/V0qAOn3OYIUlOTIZ1tVw8ku+g8KjqzrhU0Io6
+        xC2UaMIIBbThhkkmwvtiPpoPfIarLnCsZ7uX+HRQRxYUGlAB1pBUSJ6TyI5Tir5F
+        jidRcZ7VCGDIaEDucUSF6zzD3njXtzX1lVi0BXm4L2yl19k8beougVm9/Yxze8q3
+        uvS2uHVr11MWoNC3HiGZIlycy7tHTmkT/uAP9q162QlgRiBHK8fqalWbyGLiAWHS
+        XAELCgBAR6rWhFuX9aZ++CBklu1rwAEFWXZkvI+IgdE2g2MMC2VPI17K/SFW0d5J
+        hNLYgrzLCWOK1ggxkSiG5EzYesCZx29UWZHo48+dg/QtEc8irPvpsBBeBTZj
+        =8cWx
         -----END PGP MESSAGE-----
       fp: B31C0D06E2C1EB5A
   version: 3.13.1
