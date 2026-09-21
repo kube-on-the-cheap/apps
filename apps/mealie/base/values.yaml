@@ -5,10 +5,10 @@
 
 controllers:
   main:
-    strategy:
-      # RWO PVC on openebs-rawfile — RollingUpdate would deadlock on
-      # the volume attachment.
-      type: Recreate
+    # RWO PVC on openebs-rawfile — RollingUpdate would deadlock on the
+    # volume attachment. bjw-s common lib takes `strategy` as a bare
+    # string (not a {type: X} map like k8s Deployment.spec.strategy).
+    strategy: Recreate
     containers:
       main:
         image:
