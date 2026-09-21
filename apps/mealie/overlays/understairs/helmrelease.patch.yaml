@@ -1,0 +1,146 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mealie
+spec:
+  values:
+    controllers:
+      main:
+        containers:
+          main:
+            env:
+              # --- Base URL (cluster-specific) ---
+              BASE_URL: https://recipes.homelab.blacksd.tech
+
+              # --- Database (external CNPG) ---
+              # Chart helpers default to sqlite / empty when both bundled
+              # DB flags are off; override explicitly.
+              DB_ENGINE: postgres
+              POSTGRES_SERVER: mealie-pg-rw
+              POSTGRES_PORT: "5432"
+              POSTGRES_DB: mealie
+              # Override chart's default valueFrom secretKeyRef which
+              # points at a nonexistent <release>-db-credentials secret.
+              # CNPG's <cluster>-app Secret uses `username` / `password`
+              # keys directly.
+              POSTGRES_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: mealie-pg-app
+                    key: username
+              POSTGRES_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: mealie-pg-app
+                    key: password
+
+              # --- OIDC ---
+              OIDC_AUTH_ENABLED: "true"
+              OIDC_CONFIGURATION_URL: "https://auth.cloud.blacksd.tech/application/o/mealie/.well-known/openid-configuration"
+              # Access gate — only users in the Authentik `grownups`
+              # group can log in, regardless of OIDC_ADMIN_GROUP.
+              OIDC_USER_GROUP: grownups
+              # Admin role sync — users in the Authentik `admins` group
+              # are promoted to Mealie admin on login. Mealie's OIDC
+              # client auto-adds the `groups` scope to its authorize
+              # request whenever OIDC_USER_GROUP or OIDC_ADMIN_GROUP is
+              # set; the mealie_groups property mapping in
+              # configs/authentik/module/mealie.tf (scoped to the
+              # `groups` scope) is then emitted with the user's group
+              # list, and Mealie promotes members of this group.
+              OIDC_ADMIN_GROUP: admins
+              # Bypass the /login page and jump straight to Authentik.
+              # Escape hatch: append `?direct=1` to /login to force the
+              # local form if OIDC breaks.
+              OIDC_AUTO_REDIRECT: "true"
+              # Shown on the "Login with <name>" button (only visible
+              # if AUTO_REDIRECT is off).
+              OIDC_PROVIDER_NAME: Authentik
+              # Explicit defaults, called out for clarity —
+              # OIDC_SIGNUP_ENABLED is separate from ALLOW_SIGNUP and
+              # controls whether OIDC auto-provisions new users.
+              OIDC_SIGNUP_ENABLED: "true"
+              OIDC_USER_CLAIM: email
+              OIDC_GROUPS_CLAIM: groups
+              OIDC_CLIENT_ID:
+                valueFrom:
+                  secretKeyRef:
+                    name: mealie-oidc
+                    key: client_id
+              OIDC_CLIENT_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: mealie-oidc
+                    key: client_secret
+
+              # --- SMTP ---
+              SMTP_HOST: smtp.email.eu-frankfurt-1.oci.oraclecloud.com
+              SMTP_PORT: "587"
+              # STARTTLS on 587 — same wiring as Readeck / SparkyFitness.
+              SMTP_AUTH_STRATEGY: TLS
+              SMTP_FROM_NAME: "Marco's Homelab - Mealie"
+              SMTP_FROM_EMAIL: do-not-reply@mail.cloud.blacksd.tech
+              SMTP_USER:
+                valueFrom:
+                  secretKeyRef:
+                    name: smtp-creds
+                    key: username
+              SMTP_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: smtp-creds
+                    key: password
+
+            # Resources — Python + Vue, low idle footprint. Bump limits
+            # after monitoring if AI features or large recipe imports
+            # push memory.
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                cpu: 500m
+                memory: 1Gi
+
+            # Startup probe — 5-minute ceiling for Alembic migrations
+            # on first boot. Same safety net as SparkyFitness. Chart
+            # doesn't set one by default.
+            probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/app/about
+                    port: 9000
+                  periodSeconds: 5
+                  failureThreshold: 60
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/app/about
+                    port: 9000
+                  periodSeconds: 30
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /api/app/about
+                    port: 9000
+                  periodSeconds: 10
+                  failureThreshold: 3
+
+        # Pin to the amd64 mini-PC. Same escape hatch as SparkyFitness,
+        # Reactive Resume, Linkwarden, NetBox. Preemptive: Mealie image
+        # is multi-arch (amd64+arm64) but Python + Alembic migrations
+        # on first boot are the same class of workload that stalled
+        # SparkyFitness past its liveness ceiling on pi1. openebs-rawfile
+        # is node-local anyway.
+        pod:
+          nodeSelector:
+            kubernetes.io/hostname: minipc1

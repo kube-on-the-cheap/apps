@@ -6,6 +6,7 @@ resources:
   - grimmory.yaml
   - homepage.yaml
   - linkwarden.yaml
+  - mealie.yaml
   - mindwtr.yaml
   - minecraft-bedrock.yaml
   - netbox.yaml
