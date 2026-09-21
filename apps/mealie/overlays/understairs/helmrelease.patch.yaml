@@ -42,9 +42,13 @@ spec:
               # group can log in, regardless of OIDC_ADMIN_GROUP.
               OIDC_USER_GROUP: grownups
               # Admin role sync — users in the Authentik `admins` group
-              # are promoted to Mealie admin on login. Authentik emits
-              # the full group list in the `groups` claim regardless of
-              # policy bindings, so no separate binding needed.
+              # are promoted to Mealie admin on login. Mealie's OIDC
+              # client auto-adds the `groups` scope to its authorize
+              # request whenever OIDC_USER_GROUP or OIDC_ADMIN_GROUP is
+              # set; the mealie_groups property mapping in
+              # configs/authentik/module/mealie.tf (scoped to the
+              # `groups` scope) is then emitted with the user's group
+              # list, and Mealie promotes members of this group.
               OIDC_ADMIN_GROUP: admins
               # Bypass the /login page and jump straight to Authentik.
               # Escape hatch: append `?direct=1` to /login to force the

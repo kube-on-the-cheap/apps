@@ -87,11 +87,15 @@ resource "authentik_application" "mealie" {
 # Grant the `grownups` Authentik group access. Without an explicit
 # policy binding, Authentik defaults to denying every user with
 # "Request has been denied". Admin promotion within Mealie comes from
-# group-claim inspection at the app layer (OIDC_ADMIN_GROUP=admins);
-# Authentik emits the full group list in the `groups` claim regardless
-# of policy bindings, so users in `admins` (a subset of `grownups` by
-# household convention) get promoted automatically without a separate
-# binding.
+# group-claim inspection at the app layer (OIDC_ADMIN_GROUP=admins).
+# The mechanism: Mealie's OIDC client auto-adds the `groups` scope to
+# its authorize request whenever OIDC_USER_GROUP or OIDC_ADMIN_GROUP
+# is set (see mealie/core/settings/settings.py OIDC_REQUIRES_GROUP_CLAIM);
+# the mealie_groups property mapping above (scope_name = "groups") is
+# emitted only when that scope is requested. Removing both env vars
+# would silently break admin sync — users in `admins` (a subset of
+# `grownups` by household convention) get promoted automatically
+# without a separate binding.
 resource "authentik_policy_binding" "mealie_grownups" {
   target = authentik_application.mealie.uuid
   group  = authentik_group.grownups.id
