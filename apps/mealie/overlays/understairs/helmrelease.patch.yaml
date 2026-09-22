@@ -135,12 +135,10 @@ spec:
                   periodSeconds: 10
                   failureThreshold: 3
 
-        # Pin to the amd64 mini-PC. Same escape hatch as SparkyFitness,
-        # Reactive Resume, Linkwarden, NetBox. Preemptive: Mealie image
-        # is multi-arch (amd64+arm64) but Python + Alembic migrations
-        # on first boot are the same class of workload that stalled
-        # SparkyFitness past its liveness ceiling on pi1. openebs-rawfile
-        # is node-local anyway.
-        pod:
-          nodeSelector:
-            kubernetes.io/hostname: minipc1
+        # No node pin — openebs-rawfile capacity on minipc1 is nearly
+        # exhausted (only ~4 GiB free in the pool as of this rollout);
+        # scheduler picks pi1 for the 5 GiB data PVC. The 5-minute
+        # startup probe above absorbs the arm64 first-boot migration
+        # runtime that stalled SparkyFitness before it had a startup
+        # probe. If pi1's rawfile pool also fills up, either free
+        # capacity or move Mealie to NFS-backed storage.
