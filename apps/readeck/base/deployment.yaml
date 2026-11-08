@@ -39,7 +39,7 @@ spec:
             - name: READECK_USE_X_FORWARDED
               value: "true"
             - name: READECK_ALLOWED_HOSTS
-              value: "reader.homelab.blacksd.tech"
+              value: "reader.homelab.blacksd.dev"
             - name: READECK_TRUSTED_PROXIES
               value: "0.0.0.0/0"
             - name: READECK_LOG_FORMAT

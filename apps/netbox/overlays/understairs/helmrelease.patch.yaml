@@ -69,7 +69,7 @@ spec:
         kubernetes.io/hostname: minipc1
 
     allowedHosts:
-      - netbox.homelab.blacksd.tech
+      - netbox.homelab.blacksd.dev
 
     remoteAuth:
       enabled: true

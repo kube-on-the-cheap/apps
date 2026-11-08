@@ -10,7 +10,7 @@ spec:
     - name: external
       namespace: envoy-gateway-system
   hostnames:
-    - vault.homelab.blacksd.tech
+    - vault.homelab.blacksd.dev
   rules:
     - matches:
         - path:
@@ -50,7 +50,7 @@ spec:
     - name: external
       namespace: envoy-gateway-system
   hostnames:
-    - vault.homelab.blacksd.tech
+    - vault.homelab.blacksd.dev
   rules:
     - matches:
         - path:

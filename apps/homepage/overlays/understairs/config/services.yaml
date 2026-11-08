@@ -1,7 +1,7 @@
 ---
 - Media:
     - Audiobookshelf:
-        href: https://audiobooks.homelab.blacksd.tech
+        href: https://audiobooks.homelab.blacksd.dev
         description: Audiobook server
         icon: audiobookshelf.svg
         widget:
@@ -9,25 +9,25 @@
           url: http://audiobookshelf.audiobookshelf.svc.cluster.local
           key: "{{HOMEPAGE_VAR_AUDIOBOOKSHELF_KEY}}"
     - Grimmory:
-        href: https://library.homelab.blacksd.tech
+        href: https://library.homelab.blacksd.dev
         description: E-book library
         icon: mdi-bookshelf
 
 - Tools:
     - Linkwarden:
-        href: https://bookmarks.homelab.blacksd.tech
+        href: https://bookmarks.homelab.blacksd.dev
         description: Bookmark manager
         icon: linkwarden.svg
     - NetBox:
-        href: https://netbox.homelab.blacksd.tech
+        href: https://netbox.homelab.blacksd.dev
         description: IPAM and DCIM
         icon: netbox.svg
     - Open WebUI:
-        href: https://ai.homelab.blacksd.tech
+        href: https://ai.homelab.blacksd.dev
         description: Chat + LLM API router
         icon: open-webui.svg
     - Paperless-ngx:
-        href: https://paperless.homelab.blacksd.tech
+        href: https://paperless.homelab.blacksd.dev
         description: Document archive
         icon: paperless-ngx.svg
         widget:
@@ -35,15 +35,15 @@
           url: http://paperless-ngx.paperless-ngx.svc.cluster.local
           key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
     - Reactive Resume:
-        href: https://cv.homelab.blacksd.tech
+        href: https://cv.homelab.blacksd.dev
         description: Resume / CV builder
         icon: reactive-resume.svg
     - Readeck:
-        href: https://reader.homelab.blacksd.tech
+        href: https://reader.homelab.blacksd.dev
         description: Read-later
         icon: readeck.svg
     - Vaultwarden:
-        href: https://vault.homelab.blacksd.tech
+        href: https://vault.homelab.blacksd.dev
         description: Password manager
         icon: vaultwarden.svg
     - Minecraft Bedrock:

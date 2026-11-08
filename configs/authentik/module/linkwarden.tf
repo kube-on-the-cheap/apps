@@ -27,7 +27,7 @@ resource "authentik_provider_oauth2" "linkwarden" {
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://bookmarks.homelab.blacksd.tech/api/v1/auth/callback/oidc"
+      url               = "https://bookmarks.homelab.blacksd.dev/api/v1/auth/callback/oidc"
       redirect_uri_type = "authorization"
     },
   ]

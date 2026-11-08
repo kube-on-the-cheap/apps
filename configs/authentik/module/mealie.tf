@@ -41,7 +41,7 @@ resource "authentik_provider_oauth2" "mealie" {
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://recipes.homelab.blacksd.tech/login"
+      url               = "https://recipes.homelab.blacksd.dev/login"
       redirect_uri_type = "authorization"
     },
   ]

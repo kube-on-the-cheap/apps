@@ -60,7 +60,7 @@ spec:
             # in its /providers response. Without the suffix, NextAuth
             # advertises /api/auth/callback/oidc, which 404s.
             - name: NEXTAUTH_URL
-              value: "https://bookmarks.homelab.blacksd.tech/api/v1/auth"
+              value: "https://bookmarks.homelab.blacksd.dev/api/v1/auth"
             - name: MEILI_HOST
               value: "http://meilisearch:7700"
             # STORAGE_FOLDER is intentionally unset. It defaults to a

@@ -9,7 +9,7 @@ spec:
     - name: external
       namespace: envoy-gateway-system
   hostnames:
-    - library.homelab.blacksd.tech
+    - library.homelab.blacksd.dev
   rules:
     - matches:
         - path:

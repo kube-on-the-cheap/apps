@@ -26,12 +26,12 @@ resource "authentik_provider_oauth2" "audiobookshelf" {
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://audiobooks.homelab.blacksd.tech/auth/openid/callback"
+      url               = "https://audiobooks.homelab.blacksd.dev/auth/openid/callback"
       redirect_uri_type = "authorization"
     },
     {
       matching_mode     = "strict"
-      url               = "https://audiobooks.homelab.blacksd.tech/auth/openid/mobile-redirect"
+      url               = "https://audiobooks.homelab.blacksd.dev/auth/openid/mobile-redirect"
       redirect_uri_type = "authorization"
     },
   ]

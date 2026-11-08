@@ -51,7 +51,7 @@ spec:
             - name: TZ
               value: "Europe/Rome"
             - name: NEXTAUTH_URL
-              value: "https://bookmarks.homelab.blacksd.tech"
+              value: "https://bookmarks.homelab.blacksd.dev"
             - name: DATA_DIR
               value: "/data"
             - name: MEILI_ADDR

@@ -90,9 +90,9 @@ spec:
             - name: PSONO_ALLOWED_DOMAINS
               value: '["*"]'
             - name: PSONO_HOST_URL
-              value: "https://pass.homelab.blacksd.tech/server"
+              value: "https://pass.homelab.blacksd.dev/server"
             - name: PSONO_WEB_CLIENT_URL
-              value: "https://pass.homelab.blacksd.tech"
+              value: "https://pass.homelab.blacksd.dev"
             - name: PSONO_MANAGEMENT_ENABLED
               value: "True"
             - name: PSONO_AUTHENTICATION_METHODS

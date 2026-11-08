@@ -9,7 +9,7 @@ spec:
     - name: external
       namespace: envoy-gateway-system
   hostnames:
-    - seerr.homelab.blacksd.tech
+    - seerr.homelab.blacksd.dev
   rules:
     - matches:
         - path:

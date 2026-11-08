@@ -11,7 +11,7 @@ For the deploy checklist and post-install wizard steps, see `README.md`. This fi
 ```
 name           = Transmission
 enabled        = true
-host           = nas.homelab.blacksd.tech
+host           = nas.homelab.blacksd.dev
 port           = 9091
 category       = radarr
 movieDirectory = (default, uses <download-dir>/<category>)
@@ -20,7 +20,7 @@ movieDirectory = (default, uses <download-dir>/<category>)
 ### Radarr Remote Path Mappings
 
 ```
-host        = nas.homelab.blacksd.tech
+host        = nas.homelab.blacksd.dev
 remotePath  = /volume1/Media/data/downloads/complete/
 localPath   = /media/downloads/complete/
 ```

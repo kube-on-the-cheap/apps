@@ -19,5 +19,5 @@ spec:
     driver: nfs.csi.k8s.io
     volumeHandle: calibre-web-library
     volumeAttributes:
-      server: nas.homelab.blacksd.tech
+      server: nas.homelab.blacksd.dev
       share: /volume1/Apps/calibre-library

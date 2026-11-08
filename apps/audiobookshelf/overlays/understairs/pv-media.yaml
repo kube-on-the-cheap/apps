@@ -19,5 +19,5 @@ spec:
     driver: nfs.csi.k8s.io
     volumeHandle: audiobookshelf-media
     volumeAttributes:
-      server: nas.homelab.blacksd.tech
+      server: nas.homelab.blacksd.dev
       share: /volume1/Apps/audiobookshelf-media

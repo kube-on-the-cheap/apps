@@ -1,7 +1,7 @@
 # Grimmory
 
 Self-hosted digital library (community fork of BookLore). Deployed on understairs at
-`https://library.homelab.blacksd.tech` in parallel with the existing calibre-web.
+`https://library.homelab.blacksd.dev` in parallel with the existing calibre-web.
 
 Design spec: [`docs/superpowers/specs/2026-06-03-grimmory-design.md`](../../docs/superpowers/specs/2026-06-03-grimmory-design.md)
 

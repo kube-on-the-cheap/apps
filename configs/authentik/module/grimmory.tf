@@ -49,7 +49,7 @@ resource "authentik_provider_oauth2" "grimmory" {
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://library.homelab.blacksd.tech/oauth2-callback"
+      url               = "https://library.homelab.blacksd.dev/oauth2-callback"
       redirect_uri_type = "authorization"
     },
   ]
@@ -64,7 +64,7 @@ resource "authentik_provider_oauth2" "grimmory" {
 
   sub_mode                   = "user_username"
   include_claims_in_id_token = true
-  logout_uri                 = "https://library.homelab.blacksd.tech/api/v1/auth/oidc/backchannel-logout"
+  logout_uri                 = "https://library.homelab.blacksd.dev/api/v1/auth/oidc/backchannel-logout"
   logout_method              = "backchannel"
 
   # Authentik 2026.5 defaults grant_types to an empty list on API-created

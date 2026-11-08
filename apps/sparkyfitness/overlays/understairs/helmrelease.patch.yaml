@@ -86,8 +86,8 @@ spec:
         kubernetes.io/hostname: minipc1
 
     config:
-      frontendUrl: https://fitness.homelab.blacksd.tech
-      extraTrustedOrigins: https://fitness.homelab.blacksd.tech
+      frontendUrl: https://fitness.homelab.blacksd.dev
+      extraTrustedOrigins: https://fitness.homelab.blacksd.dev
 
       oidc:
         enabled: true

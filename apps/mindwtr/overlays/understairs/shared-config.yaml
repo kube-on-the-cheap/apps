@@ -9,4 +9,4 @@ metadata:
   name: mindwtr-cloud-shared-config
   namespace: mindwtr
 data:
-  MINDWTR_CLOUD_CORS_ORIGIN: "https://todo.homelab.blacksd.tech"
+  MINDWTR_CLOUD_CORS_ORIGIN: "https://todo.homelab.blacksd.dev"

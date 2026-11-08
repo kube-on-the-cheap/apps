@@ -25,7 +25,7 @@ resource "authentik_provider_oauth2" "vaultwarden" {
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://vault.homelab.blacksd.tech/identity/connect/oidc-signin"
+      url               = "https://vault.homelab.blacksd.dev/identity/connect/oidc-signin"
       redirect_uri_type = "authorization"
     },
   ]

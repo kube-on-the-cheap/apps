@@ -42,7 +42,7 @@ resource "authentik_provider_oauth2" "netbox" {
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://netbox.homelab.blacksd.tech/oauth/complete/oidc/"
+      url               = "https://netbox.homelab.blacksd.dev/oauth/complete/oidc/"
       redirect_uri_type = "authorization"
     },
   ]

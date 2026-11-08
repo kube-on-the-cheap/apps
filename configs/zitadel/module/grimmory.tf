@@ -3,8 +3,8 @@ resource "zitadel_application_oidc" "grimmory" {
   org_id     = local.org_id
   name       = "Grimmory"
 
-  redirect_uris             = ["https://library.homelab.blacksd.tech/oauth2-callback"]
-  post_logout_redirect_uris = ["https://library.homelab.blacksd.tech/"]
+  redirect_uris             = ["https://library.homelab.blacksd.dev/oauth2-callback"]
+  post_logout_redirect_uris = ["https://library.homelab.blacksd.dev/"]
   response_types            = ["OIDC_RESPONSE_TYPE_CODE"]
   grant_types = [
     "OIDC_GRANT_TYPE_AUTHORIZATION_CODE",

@@ -11,7 +11,7 @@ spec:
           main:
             env:
               # --- Base URL (cluster-specific) ---
-              BASE_URL: https://recipes.homelab.blacksd.tech
+              BASE_URL: https://recipes.homelab.blacksd.dev
 
               # --- Database (external CNPG) ---
               # Chart helpers default to sqlite / empty when both bundled

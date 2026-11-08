@@ -54,7 +54,7 @@ resource "authentik_provider_oauth2" "open_webui" {
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://ai.homelab.blacksd.tech/oauth/oidc/login/callback"
+      url               = "https://ai.homelab.blacksd.dev/oauth/oidc/login/callback"
       redirect_uri_type = "authorization"
     },
   ]

@@ -7,7 +7,7 @@
 # URLRewrite strips the /sync/<name> prefix before the request hits
 # the backend — the Bun server only knows /v1/* and /health, unaware
 # of its tenant prefix. Clients configure sync URL as
-# https://todo.homelab.blacksd.tech/sync/marco and the client's own
+# https://todo.homelab.blacksd.dev/sync/marco and the client's own
 # `normalizeCloudUrl` appends /v1/data to that full string; verified
 # against upstream packages/core/src/sync-helpers.ts.
 apiVersion: gateway.networking.k8s.io/v1
@@ -20,7 +20,7 @@ spec:
     - name: external
       namespace: envoy-gateway-system
   hostnames:
-    - todo.homelab.blacksd.tech
+    - todo.homelab.blacksd.dev
   rules:
     - matches:
         - path:
@@ -50,7 +50,7 @@ spec:
     - name: external
       namespace: envoy-gateway-system
   hostnames:
-    - todo.homelab.blacksd.tech
+    - todo.homelab.blacksd.dev
   rules:
     - matches:
         - path:

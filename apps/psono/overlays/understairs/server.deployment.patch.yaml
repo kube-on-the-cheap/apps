@@ -14,18 +14,18 @@ spec:
         - name: server
           env:
             - name: PSONO_HOST_URL
-              value: "https://pass.homelab.blacksd.tech/server"
+              value: "https://pass.homelab.blacksd.dev/server"
             - name: PSONO_WEB_CLIENT_URL
-              value: "https://pass.homelab.blacksd.tech"
+              value: "https://pass.homelab.blacksd.dev"
             # `localhost` is here for the kubelet HTTP probes only —
             # they dial the pod directly (Host: <podIP>), which Django
             # rejects with 400 DisallowedHost. Sending `Host: localhost`
             # from the probe (see httpHeaders below) plus this entry
             # gets a 200 without opening ALLOWED_HOSTS to a wildcard.
             - name: PSONO_ALLOWED_HOSTS
-              value: '["pass.homelab.blacksd.tech", "localhost"]'
+              value: '["pass.homelab.blacksd.dev", "localhost"]'
             - name: PSONO_ALLOWED_DOMAINS
-              value: '["pass.homelab.blacksd.tech"]'
+              value: '["pass.homelab.blacksd.dev"]'
           startupProbe:
             httpGet:
               path: /info/
@@ -51,10 +51,10 @@ spec:
         - name: migrate
           env:
             - name: PSONO_HOST_URL
-              value: "https://pass.homelab.blacksd.tech/server"
+              value: "https://pass.homelab.blacksd.dev/server"
             - name: PSONO_WEB_CLIENT_URL
-              value: "https://pass.homelab.blacksd.tech"
+              value: "https://pass.homelab.blacksd.dev"
             - name: PSONO_ALLOWED_HOSTS
-              value: '["pass.homelab.blacksd.tech", "localhost"]'
+              value: '["pass.homelab.blacksd.dev", "localhost"]'
             - name: PSONO_ALLOWED_DOMAINS
-              value: '["pass.homelab.blacksd.tech"]'
+              value: '["pass.homelab.blacksd.dev"]'

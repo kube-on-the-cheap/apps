@@ -43,7 +43,7 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: "home.homelab.blacksd.tech,$(POD_IP):3000"
+              value: "home.homelab.blacksd.dev,$(POD_IP):3000"
           envFrom:
             - secretRef:
                 name: homepage-secrets

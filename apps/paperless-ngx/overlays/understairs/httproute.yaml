@@ -10,7 +10,7 @@ spec:
     - name: external
       namespace: envoy-gateway-system
   hostnames:
-    - paperless.homelab.blacksd.tech
+    - paperless.homelab.blacksd.dev
   rules:
     - matches:
         - path:

@@ -42,7 +42,7 @@ resource "authentik_provider_oauth2" "sparkyfitness" {
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://fitness.homelab.blacksd.tech/api/auth/sso/callback/authentik"
+      url               = "https://fitness.homelab.blacksd.dev/api/auth/sso/callback/authentik"
       redirect_uri_type = "authorization"
     },
   ]

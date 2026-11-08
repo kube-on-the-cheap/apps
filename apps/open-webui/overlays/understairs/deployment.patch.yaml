@@ -38,7 +38,7 @@ spec:
             - name: PORT
               value: "8080"
             - name: WEBUI_URL
-              value: "https://ai.homelab.blacksd.tech"
+              value: "https://ai.homelab.blacksd.dev"
             - name: WEBUI_AUTH
               value: "true"
             # Signup gates. ENABLE_OAUTH_SIGNUP is orthogonal to
@@ -59,7 +59,7 @@ spec:
             - name: OPENID_PROVIDER_URL
               value: "https://auth.cloud.blacksd.tech/application/o/open-webui/.well-known/openid-configuration"
             - name: OPENID_REDIRECT_URI
-              value: "https://ai.homelab.blacksd.tech/oauth/oidc/login/callback"
+              value: "https://ai.homelab.blacksd.dev/oauth/oidc/login/callback"
             - name: OAUTH_PROVIDER_NAME
               value: "Authentik"
             - name: OAUTH_SCOPES

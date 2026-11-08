@@ -38,7 +38,7 @@ resource "authentik_provider_oauth2" "reactive_resume" {
   allowed_redirect_uris = [
     {
       matching_mode     = "strict"
-      url               = "https://cv.homelab.blacksd.tech/api/auth/oauth2/callback/custom"
+      url               = "https://cv.homelab.blacksd.dev/api/auth/oauth2/callback/custom"
       redirect_uri_type = "authorization"
     },
   ]

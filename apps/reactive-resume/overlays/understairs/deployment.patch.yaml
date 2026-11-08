@@ -29,7 +29,7 @@ spec:
             - name: PORT
               value: "3000"
             - name: APP_URL
-              value: "https://cv.homelab.blacksd.tech"
+              value: "https://cv.homelab.blacksd.dev"
             - name: LOCAL_STORAGE_PATH
               value: "/app/data"
             # AI Agent Workspace (optional feature). Redis is a
